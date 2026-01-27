@@ -1,0 +1,9 @@
+/**
+ * Shared TypeScript type definitions for ARC4DE frontend.
+ *
+ * Types are added as features are implemented in subsequent phases.
+ */
+
+export interface HealthResponse {
+  status: string;
+}
