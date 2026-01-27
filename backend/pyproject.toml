@@ -1,0 +1,12 @@
+[project]
+name = "arc4de-backend"
+version = "0.1.0"
+description = "ARC4DE - Automated Remote Control for Distributed Environments"
+requires-python = ">=3.11"
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
