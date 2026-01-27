@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     # Server
     backend_port: int = 8000
 
+    # Sessions
+    session_ttl_hours: int = 24
+
     @property
     def cors_origins(self) -> list[str]:
         return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]
