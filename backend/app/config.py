@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     auth_password: str = "changeme"
 
     # CORS
-    allowed_origins: str = "http://localhost:5173,http://localhost:3000"
+    allowed_origins: str = "http://localhost:5175,http://localhost:3000"
 
     # Server
     backend_port: int = 8000
