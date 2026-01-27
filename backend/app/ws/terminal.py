@@ -85,11 +85,14 @@ async def terminal_handler(websocket: WebSocket) -> None:
     master_fd, slave_fd = pty.openpty()
 
     # Spawn tmux attach with the slave end as the terminal
+    env = os.environ.copy()
+    env.setdefault("TERM", "xterm-256color")
     proc = await asyncio.create_subprocess_exec(
         "tmux", "attach-session", "-t", tmux_name,
         stdin=slave_fd,
         stdout=slave_fd,
         stderr=slave_fd,
+        env=env,
     )
     os.close(slave_fd)  # Parent doesn't need the slave end
 
