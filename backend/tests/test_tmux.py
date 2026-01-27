@@ -101,3 +101,34 @@ class TestKillSession:
     async def test_kill_nonexistent_raises(self, manager):
         with pytest.raises(ValueError, match="not found"):
             await manager.kill_session("nonexistent")
+
+
+class TestSendKeys:
+    @pytest.mark.asyncio
+    async def test_send_keys(self, manager):
+        info = await manager.create_session("keys-test")
+        await manager.send_keys(info.session_id, "echo hello-arc4de")
+        # Give tmux a moment to process
+        await asyncio.sleep(0.5)
+        output = await manager.capture_output(info.session_id)
+        assert "hello-arc4de" in output
+
+    @pytest.mark.asyncio
+    async def test_send_keys_nonexistent_raises(self, manager):
+        with pytest.raises(ValueError, match="not found"):
+            await manager.send_keys("nonexistent", "echo test")
+
+
+class TestCaptureOutput:
+    @pytest.mark.asyncio
+    async def test_capture_output(self, manager):
+        info = await manager.create_session("capture-test")
+        await manager.send_keys(info.session_id, "echo capture-marker-xyz")
+        await asyncio.sleep(0.5)
+        output = await manager.capture_output(info.session_id)
+        assert "capture-marker-xyz" in output
+
+    @pytest.mark.asyncio
+    async def test_capture_nonexistent_raises(self, manager):
+        with pytest.raises(ValueError, match="not found"):
+            await manager.capture_output("nonexistent")
