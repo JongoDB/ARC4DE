@@ -8,6 +8,7 @@ from app.api.auth import router as auth_router
 from app.api.sessions import router as sessions_router
 from app.config import settings
 from app.core.tmux import TmuxManager
+from app.ws.terminal import terminal_handler
 
 
 @asynccontextmanager
@@ -54,6 +55,9 @@ app.add_middleware(
 # Routes
 app.include_router(auth_router)
 app.include_router(sessions_router)
+
+# WebSocket
+app.add_websocket_route("/ws/terminal", terminal_handler)
 
 
 @app.get("/api/health")
