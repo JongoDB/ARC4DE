@@ -168,3 +168,47 @@ class TestWebSocketTerminalIO:
             })
             msg = ws.receive_json()
             assert msg["type"] == "error"
+
+
+class TestWebSocketResize:
+    def test_resize(self, client, access_token):
+        """Resize message should not error."""
+        resp = client.post(
+            "/api/sessions",
+            json={"name": "resize-test"},
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        session_id = resp.json()["session_id"]
+
+        with client.websocket_connect("/ws/terminal") as ws:
+            ws.send_json({
+                "type": "auth",
+                "token": access_token,
+                "session_id": session_id,
+            })
+            ws.receive_json()  # auth.ok
+            ws.send_json({"type": "resize", "cols": 120, "rows": 40})
+            # Send a ping to verify connection is still alive after resize
+            ws.send_json({"type": "ping"})
+            msg = ws.receive_json()
+            assert msg["type"] in ("pong", "output")
+
+    def test_unknown_message_type(self, client, access_token):
+        """Unknown message types should return an error message."""
+        with client.websocket_connect("/ws/terminal") as ws:
+            ws.send_json({"type": "auth", "token": access_token})
+            ws.receive_json()  # auth.ok
+            ws.send_json({"type": "unknown_type"})
+            # Drain any output messages first, then look for error
+            deadline = time.time() + 3
+            found_error = False
+            while time.time() < deadline:
+                try:
+                    msg = ws.receive_json()
+                    if msg["type"] == "error":
+                        assert "unknown_type" in msg["message"].lower() or "Unknown" in msg["message"]
+                        found_error = True
+                        break
+                except Exception:
+                    break
+            assert found_error
