@@ -6,9 +6,9 @@ ARC4DE (Automated Remote Control for Distributed Environments, pronounced "Arcad
 
 ## Current State
 
-**Phase:** Phase 1 - Skeleton (NOT STARTED)
+**Phase:** Phase 2 - Backend Core (NOT STARTED)
 **Branch:** master
-**Last completed:** Architecture design approved and committed
+**Last completed:** Phase 1 - Skeleton (project scaffolding, Docker, backend health, frontend PWA shell)
 
 ## Development Rhythm
 
@@ -56,7 +56,7 @@ Single connection per server at `/ws/terminal`. JSON messages:
 
 | # | Phase | Status |
 |---|-------|--------|
-| 1 | Skeleton - scaffolding, configs, Docker, git | NOT STARTED |
+| 1 | Skeleton - scaffolding, configs, Docker, git | COMPLETE |
 | 2 | Backend Core - FastAPI app, CORS, health | NOT STARTED |
 | 3 | Authentication - JWT login/refresh | NOT STARTED |
 | 4 | tmux Integration - session management wrapper | NOT STARTED |
