@@ -7,3 +7,10 @@
 export interface HealthResponse {
   status: string;
 }
+
+export type DeviceClass = "mobile" | "tablet" | "desktop";
+
+export interface RouteConfig {
+  path: string;
+  label: string;
+}
