@@ -138,3 +138,9 @@ async def logout(
     except Exception:
         pass  # If token is invalid, nothing to revoke -- still return 200
     return {"status": "ok"}
+
+
+@router.get("/me")
+async def me(user: dict = Depends(get_current_user)) -> dict:
+    """Return current user info from the access token. Useful for verifying auth."""
+    return user
