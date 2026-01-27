@@ -6,9 +6,9 @@ ARC4DE (Automated Remote Control for Distributed Environments, pronounced "Arcad
 
 ## Current State
 
-**Phase:** Phase 2 - Backend Core (NOT STARTED)
+**Phase:** Phase 4 - tmux Integration (NOT STARTED)
 **Branch:** master
-**Last completed:** Phase 1 - Skeleton (project scaffolding, Docker, backend health, frontend PWA shell)
+**Last completed:** Phase 3 - Authentication (JWT login/refresh/logout, rate limiting, protected route dependency)
 
 ## Development Rhythm
 
@@ -57,8 +57,8 @@ Single connection per server at `/ws/terminal`. JSON messages:
 | # | Phase | Status |
 |---|-------|--------|
 | 1 | Skeleton - scaffolding, configs, Docker, git | COMPLETE |
-| 2 | Backend Core - FastAPI app, CORS, health | NOT STARTED |
-| 3 | Authentication - JWT login/refresh | NOT STARTED |
+| 2 | Backend Core - FastAPI app, CORS, health | COMPLETE (delivered in Phase 1) |
+| 3 | Authentication - JWT login/refresh | COMPLETE |
 | 4 | tmux Integration - session management wrapper | NOT STARTED |
 | 5 | WebSocket Terminal - PTY/tmux/WS bridge | NOT STARTED |
 | 6 | Frontend Shell - routing, adaptive layouts | NOT STARTED |
@@ -113,11 +113,17 @@ arc4de/
 cd backend && pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 
+# Backend tests
+cd backend && python -m pytest tests/ -v
+
 # Frontend (development)
 cd frontend && npm install && npm run dev
 
 # Full stack (Docker)
 docker-compose up --build
+
+# Tests inside Docker
+docker-compose exec backend python -m pytest tests/ -v
 ```
 
 ## Key Docs
