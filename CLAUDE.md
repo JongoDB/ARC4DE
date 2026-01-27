@@ -6,9 +6,9 @@ ARC4DE (Automated Remote Control for Distributed Environments, pronounced "Arcad
 
 ## Current State
 
-**Phase:** Phase 5 - WebSocket Terminal (NOT STARTED)
+**Phase:** Phase 6 - Frontend Shell (NOT STARTED)
 **Branch:** master
-**Last completed:** Phase 4 - tmux Integration (TmuxManager, session CRUD API, TTL cleanup)
+**Last completed:** Phase 5 - WebSocket Terminal (PTY bridge, auth, resize, I/O streaming)
 
 ## Development Rhythm
 
@@ -60,7 +60,7 @@ Single connection per server at `/ws/terminal`. JSON messages:
 | 2 | Backend Core - FastAPI app, CORS, health | COMPLETE (delivered in Phase 1) |
 | 3 | Authentication - JWT login/refresh | COMPLETE |
 | 4 | tmux Integration - session management wrapper | COMPLETE |
-| 5 | WebSocket Terminal - PTY/tmux/WS bridge | NOT STARTED |
+| 5 | WebSocket Terminal - PTY/tmux/WS bridge | COMPLETE |
 | 6 | Frontend Shell - routing, adaptive layouts | NOT STARTED |
 | 7 | Terminal UI - xterm.js, mobile input, resize | NOT STARTED |
 | 8 | Server Management - add/edit/remove, IndexedDB | NOT STARTED |
