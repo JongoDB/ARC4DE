@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Plus, Server, Pencil, Trash2, ExternalLink } from "lucide-react";
 import { useServerStore } from "@/stores/serverStore";
 import type { ServerConfig } from "@/types";
 
@@ -71,18 +72,24 @@ export function ServerListPage() {
   return (
     <div className="flex h-full flex-col overflow-y-auto p-4 sm:p-6">
       {/* Header */}
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-[var(--color-text-primary)]">
-          Servers
-        </h1>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
+            Servers
+          </h1>
+          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
+            {servers.length} server{servers.length !== 1 ? "s" : ""} configured
+          </p>
+        </div>
         {!showForm && (
           <button
             onClick={() => {
               resetForm();
               setShowForm(true);
             }}
-            className="rounded bg-[var(--color-accent)] px-3 py-1.5 text-sm font-medium text-white hover:bg-[var(--color-accent-hover)]"
+            className="flex items-center gap-2 rounded-lg bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--color-accent-hover)]"
           >
+            <Plus className="h-4 w-4" />
             Add Server
           </button>
         )}
@@ -90,39 +97,49 @@ export function ServerListPage() {
 
       {/* Add/Edit Form */}
       {showForm && (
-        <div className="mb-4 rounded-lg border border-[var(--color-bg-tertiary)] bg-[var(--color-bg-secondary)] p-4">
-          <h2 className="mb-3 text-sm font-semibold text-[var(--color-text-primary)]">
-            {editingId ? "Edit Server" : "Add Server"}
+        <div className="mb-6 rounded-xl border border-[var(--color-bg-tertiary)] bg-[var(--color-bg-secondary)] p-5">
+          <h2 className="mb-4 text-base font-semibold text-[var(--color-text-primary)]">
+            {editingId ? "Edit Server" : "Add New Server"}
           </h2>
-          <div className="space-y-3">
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Server name (e.g. Home Lab)"
-              className="w-full rounded bg-[var(--color-bg-tertiary)] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-secondary)] focus:ring-1 focus:ring-[var(--color-accent)]"
-              autoFocus
-            />
-            <input
-              type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="URL (e.g. https://myserver.example.com)"
-              className="w-full rounded bg-[var(--color-bg-tertiary)] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-secondary)] focus:ring-1 focus:ring-[var(--color-accent)]"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSubmit();
-              }}
-            />
-            <div className="flex gap-2">
+          <div className="space-y-4">
+            <div>
+              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[var(--color-text-secondary)]">
+                Server Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Home Lab"
+                className="w-full rounded-lg bg-[var(--color-bg-tertiary)] px-3 py-2.5 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-secondary)] focus:ring-2 focus:ring-[var(--color-accent)]"
+                autoFocus
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[var(--color-text-secondary)]">
+                Server URL
+              </label>
+              <input
+                type="text"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="e.g. https://myserver.example.com"
+                className="w-full rounded-lg bg-[var(--color-bg-tertiary)] px-3 py-2.5 text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-secondary)] focus:ring-2 focus:ring-[var(--color-accent)]"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSubmit();
+                }}
+              />
+            </div>
+            <div className="flex gap-3 pt-2">
               <button
                 onClick={handleSubmit}
-                className="rounded bg-[var(--color-accent)] px-3 py-1.5 text-sm font-medium text-white hover:bg-[var(--color-accent-hover)]"
+                className="rounded-lg bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--color-accent-hover)]"
               >
-                {editingId ? "Save" : "Add"}
+                {editingId ? "Save Changes" : "Add Server"}
               </button>
               <button
                 onClick={resetForm}
-                className="rounded px-3 py-1.5 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]"
               >
                 Cancel
               </button>
@@ -134,56 +151,73 @@ export function ServerListPage() {
       {/* Empty state */}
       {servers.length === 0 && !showForm && (
         <div className="flex flex-1 flex-col items-center justify-center">
-          <p className="text-[var(--color-text-secondary)]">
-            No servers configured yet.
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-bg-tertiary)]">
+            <Server className="h-8 w-8 text-[var(--color-text-secondary)]" />
+          </div>
+          <p className="mb-1 text-lg font-medium text-[var(--color-text-primary)]">
+            No servers yet
+          </p>
+          <p className="mb-4 text-sm text-[var(--color-text-secondary)]">
+            Add your first server to get started
           </p>
           <button
             onClick={() => setShowForm(true)}
-            className="mt-3 rounded bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--color-accent-hover)]"
+            className="flex items-center gap-2 rounded-lg bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--color-accent-hover)]"
           >
-            Add your first server
+            <Plus className="h-4 w-4" />
+            Add Server
           </button>
         </div>
       )}
 
       {/* Server list */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         {servers.map((server) => (
           <div
             key={server.id}
             onClick={() => handleCardClick(server)}
-            className="flex cursor-pointer items-center justify-between rounded-lg border border-[var(--color-bg-tertiary)] bg-[var(--color-bg-secondary)] p-4 transition-colors hover:border-[var(--color-accent)]"
+            className="group flex cursor-pointer items-center justify-between rounded-xl border border-[var(--color-bg-tertiary)] bg-[var(--color-bg-secondary)] p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--color-accent)] hover:shadow-lg hover:shadow-[var(--color-accent)]/10"
           >
-            <div className="min-w-0 flex-1">
-              <div className="text-sm font-medium text-[var(--color-text-primary)]">
-                {server.name}
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-bg-tertiary)]">
+                <Server className="h-5 w-5 text-[var(--color-accent)]" />
               </div>
-              <div className="truncate text-xs text-[var(--color-text-secondary)]">
-                {server.url}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-[var(--color-text-primary)]">
+                    {server.name}
+                  </span>
+                  <ExternalLink className="h-3.5 w-3.5 text-[var(--color-text-secondary)] opacity-0 transition-opacity group-hover:opacity-100" />
+                </div>
+                <div className="truncate text-sm text-[var(--color-text-secondary)]">
+                  {server.url}
+                </div>
               </div>
             </div>
-            <div className="ml-3 flex shrink-0 gap-1">
+            <div className="ml-3 flex shrink-0 gap-1 opacity-0 transition-opacity group-hover:opacity-100">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   startEdit(server);
                 }}
-                className="rounded px-2 py-1 text-xs text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]"
+                className="rounded-lg p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]"
+                title="Edit server"
               >
-                Edit
+                <Pencil className="h-4 w-4" />
               </button>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handleDelete(server.id);
                 }}
-                className={`rounded px-2 py-1 text-xs ${
+                className={`rounded-lg p-2 transition-colors ${
                   confirmDeleteId === server.id
                     ? "bg-[var(--color-error)] text-white"
                     : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-error)]"
                 }`}
+                title={confirmDeleteId === server.id ? "Click to confirm" : "Delete server"}
               >
-                {confirmDeleteId === server.id ? "Confirm?" : "Delete"}
+                <Trash2 className="h-4 w-4" />
               </button>
             </div>
           </div>
