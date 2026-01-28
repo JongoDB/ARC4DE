@@ -12,7 +12,10 @@ class ShellPlugin(Plugin):
         return True
 
     def get_quick_actions(self) -> list[QuickAction]:
-        return []
+        return [
+            QuickAction(label="Clear", command="clear", icon="trash"),
+            QuickAction(label="Exit", command="exit", icon="x"),
+        ]
 
     def get_health(self) -> PluginHealth:
         return PluginHealth(available=True)
