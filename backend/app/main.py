@@ -1,19 +1,29 @@
 import asyncio
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.auth import router as auth_router
+from app.api.plugins import router as plugins_router, set_plugin_manager
 from app.api.sessions import router as sessions_router
 from app.config import settings
 from app.core.tmux import TmuxManager
+from app.plugins.manager import PluginManager
 from app.ws.terminal import terminal_handler
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Start background cleanup on startup, cancel on shutdown."""
+    """Start background cleanup and plugin discovery on startup."""
+    # Plugin discovery
+    plugin_mgr = PluginManager()
+    plugin_mgr.discover(Path(__file__).resolve().parent / "plugins")
+    await plugin_mgr.initialize_all()
+    set_plugin_manager(plugin_mgr)
+
+    # Session cleanup loop
     manager = TmuxManager()
     task = asyncio.create_task(_cleanup_loop(manager))
     yield
@@ -55,6 +65,7 @@ app.add_middleware(
 # Routes
 app.include_router(auth_router)
 app.include_router(sessions_router)
+app.include_router(plugins_router)
 
 # WebSocket
 app.add_websocket_route("/ws/terminal", terminal_handler)
