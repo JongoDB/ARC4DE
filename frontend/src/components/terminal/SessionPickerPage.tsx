@@ -151,10 +151,10 @@ export function SessionPickerPage() {
   }
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto px-4 py-6 sm:p-0">
+    <div className="flex h-full flex-col overflow-y-auto px-5 py-8 sm:p-0">
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between sm:px-6 sm:pt-6">
-        <div className="flex items-center gap-3">
+      <div className="mb-8 flex items-center justify-between gap-4 sm:px-6 sm:pt-6">
+        <div className="flex items-center gap-4">
           <button
             onClick={() => navigate("/")}
             className="flex h-11 w-11 items-center justify-center rounded-lg text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]"
@@ -162,7 +162,7 @@ export function SessionPickerPage() {
             <ArrowLeft size={20} />
           </button>
           <div>
-            <h1 className="text-xl font-semibold tracking-tight text-[var(--color-text-primary)]">
+            <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
               {activeServer.name}
             </h1>
             <p className="text-sm text-[var(--color-text-muted)]">
@@ -181,13 +181,13 @@ export function SessionPickerPage() {
 
       {/* Error */}
       {error && (
-        <div className="mb-4 rounded-lg bg-[var(--color-error)]/10 px-4 py-3 text-sm text-[var(--color-error)] sm:mx-6">
+        <div className="mb-5 rounded-lg bg-[var(--color-error)]/10 px-4 py-3 text-sm text-[var(--color-error)] sm:mx-6">
           {error}
         </div>
       )}
 
       {/* New Session Card */}
-      <div className="mb-4 sm:mx-6">
+      <div className="mb-6 sm:mx-6">
         {!showForm ? (
           <button
             onClick={() => {
@@ -197,7 +197,7 @@ export function SessionPickerPage() {
               setSelectedPlugin("shell");
               setConfirmDeleteId(null);
             }}
-            className="group flex w-full items-center gap-4 rounded-xl border border-dashed border-[var(--color-border)] bg-[var(--color-bg-tertiary)] p-5 transition-all hover:border-[var(--color-accent)] hover:bg-[var(--color-bg-elevated)]"
+            className="group flex w-full items-center gap-4 rounded-xl border border-dashed border-[var(--color-border)] bg-[var(--color-bg-tertiary)] p-6 transition-all hover:border-[var(--color-accent)] hover:bg-[var(--color-bg-elevated)]"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-accent)]/10 text-[var(--color-accent)] transition-colors group-hover:bg-[var(--color-accent)] group-hover:text-white">
               <Plus size={24} />
@@ -212,8 +212,8 @@ export function SessionPickerPage() {
             </div>
           </button>
         ) : (
-          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] p-6">
-            <div className="mb-5 flex items-center gap-4">
+          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] p-8">
+            <div className="mb-6 flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-accent)] text-white">
                 <Plus size={24} />
               </div>
@@ -227,11 +227,11 @@ export function SessionPickerPage() {
               </div>
             </div>
 
-            <div className="space-y-5">
+            <div className="space-y-6">
               {/* Plugin selector as pills */}
               {plugins.length > 0 && (
                 <div>
-                  <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
+                  <label className="mb-3 block text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
                     Session Type
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -257,7 +257,7 @@ export function SessionPickerPage() {
 
               {/* Session name input */}
               <div>
-                <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
+                <label className="mb-3 block text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
                   Session Name
                 </label>
                 <input
@@ -276,7 +276,7 @@ export function SessionPickerPage() {
               </div>
 
               {/* Action buttons */}
-              <div className="flex gap-3 pt-1">
+              <div className="flex gap-3 pt-2">
                 <button
                   onClick={handleCreate}
                   disabled={creating || !name.trim()}
@@ -320,12 +320,12 @@ export function SessionPickerPage() {
 
       {/* Session list */}
       {sessions.length > 0 && (
-        <div className="space-y-3 sm:px-6 sm:pb-6">
+        <div className="space-y-4 sm:px-6 sm:pb-6">
           {sessions.map((session) => (
             <div
               key={session.session_id}
               onClick={() => handleSelect(session.session_id, session.plugin)}
-              className="group flex cursor-pointer items-center justify-between rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] p-5 transition-colors hover:border-[var(--color-border-hover)] hover:bg-[var(--color-bg-elevated)]"
+              className="group flex cursor-pointer items-center justify-between rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] p-6 transition-colors hover:border-[var(--color-border-hover)] hover:bg-[var(--color-bg-elevated)]"
             >
               <div className="flex items-center gap-4">
                 <div

@@ -72,9 +72,9 @@ export function ServerListPage() {
   return (
     <div className="flex h-full flex-col overflow-y-auto">
       {/* Mobile padding wrapper */}
-      <div className="px-4 py-6 sm:p-0">
+      <div className="px-5 py-8 sm:p-0">
         {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-8 flex items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
               Servers
@@ -173,14 +173,14 @@ export function ServerListPage() {
         )}
 
         {/* Server list */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           {servers.map((server) => (
             <div
               key={server.id}
               onClick={() => handleCardClick(server)}
-              className="group flex cursor-pointer items-center justify-between rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] p-5 transition-colors hover:border-[var(--color-border-hover)] hover:bg-[var(--color-bg-elevated)]"
+              className="group flex cursor-pointer items-center justify-between rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] p-6 transition-colors hover:border-[var(--color-border-hover)] hover:bg-[var(--color-bg-elevated)]"
             >
-              <div className="flex min-w-0 flex-1 items-center gap-3">
+              <div className="flex min-w-0 flex-1 items-center gap-4">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--color-bg-elevated)]">
                   <Server className="h-5 w-5 text-[var(--color-accent)]" />
                 </div>

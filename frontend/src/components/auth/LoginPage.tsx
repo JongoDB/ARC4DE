@@ -62,12 +62,12 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-full items-center justify-center px-4 py-8">
-      <div className="w-full max-w-sm space-y-4">
+    <div className="flex min-h-full items-center justify-center px-5 py-10">
+      <div className="w-full max-w-sm space-y-5">
         {/* Card */}
-        <div className="w-full max-w-sm rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] p-6">
+        <div className="w-full max-w-sm rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] p-8">
           {/* Server info */}
-          <div className="mb-6 flex items-center gap-3">
+          <div className="mb-8 flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-bg-elevated)]">
               <Server size={24} className="text-[var(--color-accent)]" />
             </div>
@@ -83,15 +83,15 @@ export function LoginPage() {
 
           {/* Error */}
           {error && (
-            <div className="mb-4 flex items-center gap-2 rounded-lg border border-[var(--color-error)]/30 bg-[var(--color-error)]/10 px-4 py-3 text-sm text-[var(--color-error)]">
+            <div className="mb-5 flex items-center gap-2 rounded-lg border border-[var(--color-error)]/30 bg-[var(--color-error)]/10 px-4 py-3 text-sm text-[var(--color-error)]">
               <AlertCircle size={16} />
               {error}
             </div>
           )}
 
           {/* Password field */}
-          <div className="mb-4">
-            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
+          <div className="mb-5">
+            <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
               Password
             </label>
             <div className="relative">
