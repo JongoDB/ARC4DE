@@ -21,6 +21,7 @@ class SessionInfo:
     tmux_name: str
     state: str  # "active" | "detached"
     created_at: str  # ISO 8601
+    plugin: str = "shell"
 
     def to_dict(self) -> dict:
         return {
@@ -29,6 +30,7 @@ class SessionInfo:
             "tmux_name": self.tmux_name,
             "state": self.state,
             "created_at": self.created_at,
+            "plugin": self.plugin,
         }
 
 
@@ -53,19 +55,33 @@ async def _run_tmux(*args: str) -> tuple[int, str, str]:
 class TmuxManager:
     """Async wrapper around tmux CLI for session management."""
 
-    async def create_session(self, name: str) -> SessionInfo:
-        """Create a new tmux session."""
+    async def create_session(
+        self, name: str, command: str = "", plugin: str = "shell"
+    ) -> SessionInfo:
+        """Create a new tmux session.
+
+        Args:
+            name: Human-readable session name.
+            command: CLI command to run inside tmux (empty = default shell).
+            plugin: Plugin slug that owns this session.
+        """
         session_id = uuid4().hex[:12]
         tmux_name = f"arc4de-{session_id}"
         now = datetime.now(timezone.utc).isoformat()
 
-        rc, _, stderr = await _run_tmux(
-            "new-session", "-d", "-s", tmux_name, "-x", "200", "-y", "50"
-        )
+        tmux_args = ["new-session", "-d", "-s", tmux_name, "-x", "200", "-y", "50"]
+        if command:
+            tmux_args.append(command)
+
+        rc, _, stderr = await _run_tmux(*tmux_args)
         if rc != 0:
             raise RuntimeError(f"Failed to create tmux session: {stderr}")
 
-        _session_registry[session_id] = {"name": name, "created_at": now}
+        _session_registry[session_id] = {
+            "name": name,
+            "created_at": now,
+            "plugin": plugin,
+        }
 
         return SessionInfo(
             session_id=session_id,
@@ -73,6 +89,7 @@ class TmuxManager:
             tmux_name=tmux_name,
             state="detached",
             created_at=now,
+            plugin=plugin,
         )
 
     async def list_sessions(self) -> list[SessionInfo]:
@@ -98,6 +115,7 @@ class TmuxManager:
             reg = _session_registry.get(session_id, {})
             name = reg.get("name", session_id)
             created_at = reg.get("created_at", "")
+            plugin = reg.get("plugin", "shell")
 
             sessions.append(
                 SessionInfo(
@@ -106,6 +124,7 @@ class TmuxManager:
                     tmux_name=tmux_name,
                     state=state,
                     created_at=created_at,
+                    plugin=plugin,
                 )
             )
 

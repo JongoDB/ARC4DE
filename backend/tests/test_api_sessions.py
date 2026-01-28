@@ -1,14 +1,17 @@
 """Tests for sessions API routes."""
 
 import asyncio
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
 from app.api.auth import _token_store, _rate_limiter
+from app.api.plugins import set_plugin_manager
 from app.api.sessions import _tmux_manager
 from app.core.tmux import _session_registry
+from app.plugins.manager import PluginManager
 
 
 @pytest.fixture(autouse=True)
@@ -18,6 +21,16 @@ def reset_auth_state():
     yield
     _token_store._active_jtis.clear()
     _rate_limiter.reset()
+
+
+@pytest.fixture(autouse=True)
+def _setup_plugin_manager():
+    """Wire PluginManager so session creation can resolve plugins."""
+    mgr = PluginManager()
+    mgr.discover(Path(__file__).resolve().parent.parent / "app" / "plugins")
+    set_plugin_manager(mgr)
+    yield
+    set_plugin_manager(None)
 
 
 @pytest.fixture(autouse=True)
@@ -119,3 +132,46 @@ class TestDeleteSession:
     def test_delete_unauthenticated(self, client):
         resp = client.delete("/api/sessions/anything")
         assert resp.status_code == 401
+
+
+class TestCreateSessionWithPlugin:
+    def test_create_with_shell_plugin(self, client, auth_headers):
+        resp = client.post(
+            "/api/sessions",
+            json={"name": "shell-test", "plugin": "shell"},
+            headers=auth_headers,
+        )
+        assert resp.status_code == 201
+        data = resp.json()
+        assert data["name"] == "shell-test"
+        assert data["plugin"] == "shell"
+
+    def test_create_with_unknown_plugin(self, client, auth_headers):
+        resp = client.post(
+            "/api/sessions",
+            json={"name": "bad", "plugin": "nonexistent"},
+            headers=auth_headers,
+        )
+        assert resp.status_code == 404
+
+    def test_create_without_plugin_defaults_to_shell(self, client, auth_headers):
+        resp = client.post(
+            "/api/sessions",
+            json={"name": "default-test"},
+            headers=auth_headers,
+        )
+        assert resp.status_code == 201
+        data = resp.json()
+        assert data["plugin"] == "shell"
+
+    def test_plugin_in_session_list(self, client, auth_headers):
+        client.post(
+            "/api/sessions",
+            json={"name": "list-plugin-test", "plugin": "shell"},
+            headers=auth_headers,
+        )
+        resp = client.get("/api/sessions", headers=auth_headers)
+        session = next(
+            s for s in resp.json() if s["name"] == "list-plugin-test"
+        )
+        assert session["plugin"] == "shell"

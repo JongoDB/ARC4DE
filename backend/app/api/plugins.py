@@ -16,6 +16,11 @@ def set_plugin_manager(manager) -> None:
     _plugin_manager = manager
 
 
+def get_plugin_manager():
+    """Return the initialized PluginManager (for use by other modules)."""
+    return _plugin_manager
+
+
 def _get_manager():
     if _plugin_manager is None:
         raise RuntimeError("PluginManager not initialized")

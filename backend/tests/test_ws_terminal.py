@@ -1,14 +1,17 @@
 """Tests for WebSocket terminal handler."""
 
 import time
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
 from app.api.auth import _token_store, _rate_limiter
+from app.api.plugins import set_plugin_manager
 from app.api.sessions import _tmux_manager
 from app.core.tmux import _session_registry
+from app.plugins.manager import PluginManager
 
 
 @pytest.fixture(autouse=True)
@@ -18,6 +21,16 @@ def reset_auth_state():
     yield
     _token_store._active_jtis.clear()
     _rate_limiter.reset()
+
+
+@pytest.fixture(autouse=True)
+def _setup_plugin_manager():
+    """Wire PluginManager so session creation can resolve plugins."""
+    mgr = PluginManager()
+    mgr.discover(Path(__file__).resolve().parent.parent / "app" / "plugins")
+    set_plugin_manager(mgr)
+    yield
+    set_plugin_manager(None)
 
 
 @pytest.fixture(autouse=True)
