@@ -120,9 +120,9 @@ export function SessionPickerPage() {
     }
   };
 
-  const handleSelect = (sessionId: string) => {
+  const handleSelect = (sessionId: string, plugin: string) => {
     if (confirmDeleteId) return;
-    setSession(sessionId);
+    setSession(sessionId, plugin);
     navigate("/terminal");
   };
 
@@ -265,7 +265,7 @@ export function SessionPickerPage() {
         {sessions.map((session) => (
           <div
             key={session.session_id}
-            onClick={() => handleSelect(session.session_id)}
+            onClick={() => handleSelect(session.session_id, session.plugin)}
             className="flex cursor-pointer items-center justify-between rounded-lg border border-[var(--color-bg-tertiary)] bg-[var(--color-bg-secondary)] p-4 transition-colors hover:border-[var(--color-accent)]"
           >
             <div className="min-w-0 flex-1">
