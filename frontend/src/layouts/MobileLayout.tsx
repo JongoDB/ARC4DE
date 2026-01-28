@@ -1,49 +1,48 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import { Server, Layers, Terminal } from "lucide-react";
 
 const NAV_ITEMS = [
-  { path: "/", label: "Servers", icon: Server },
-  { path: "/sessions", label: "Sessions", icon: Layers },
-  { path: "/terminal", label: "Terminal", icon: Terminal },
+  { to: "/", icon: Server, label: "Servers" },
+  { to: "/sessions", icon: Layers, label: "Sessions" },
+  { to: "/terminal", icon: Terminal, label: "Terminal" },
 ];
 
 export function MobileLayout() {
-  const location = useLocation();
-
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-screen flex-col bg-[var(--color-bg-primary)]">
       {/* Header */}
-      <header className="flex h-12 shrink-0 items-center border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-4">
-        <span className="text-lg font-bold tracking-tight text-[var(--color-text-primary)]">
+      <header className="flex h-14 shrink-0 items-center justify-center border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+        <span className="text-lg font-bold text-[var(--color-text-primary)]">
           ARC<span className="text-[var(--color-accent)]">4</span>DE
         </span>
       </header>
 
-      {/* Main content */}
-      <main className="min-h-0 flex-1 overflow-hidden bg-[var(--color-bg-primary)]">
+      {/* Content */}
+      <main className="flex-1 overflow-y-auto">
         <Outlet />
       </main>
 
-      {/* Bottom navigation */}
-      <nav className="flex h-14 shrink-0 items-center justify-around border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
-        {NAV_ITEMS.map((item) => {
-          const isActive = location.pathname === item.path;
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`flex flex-col items-center gap-1 px-4 py-1 ${
-                isActive
-                  ? "text-[var(--color-accent)]"
-                  : "text-[var(--color-text-secondary)]"
-              }`}
+      {/* Bottom navigation - 72px + safe area */}
+      <nav className="shrink-0 border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)] pb-[env(safe-area-inset-bottom)]">
+        <div className="flex h-[72px] items-center justify-around px-4">
+          {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === "/"}
+              className={({ isActive }) =>
+                `flex flex-col items-center justify-center gap-1 rounded-xl px-4 py-2 transition-colors ${
+                  isActive
+                    ? "bg-[var(--color-accent-muted)] text-[var(--color-text-primary)]"
+                    : "text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
+                }`
+              }
             >
-              <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-              <span className="text-[10px] font-medium">{item.label}</span>
-            </Link>
-          );
-        })}
+              <Icon size={24} />
+              <span className="text-[11px] font-medium">{label}</span>
+            </NavLink>
+          ))}
+        </div>
       </nav>
     </div>
   );
