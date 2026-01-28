@@ -6,9 +6,9 @@ ARC4DE (Automated Remote Control for Distributed Environments, pronounced "Arcad
 
 ## Current State
 
-**Phase:** Phase 10 - (NOT STARTED)
+**Phase:** Phase 11 - Quick Actions (NOT STARTED)
 **Branch:** master
-**Last completed:** Phase 9 - Session Management (SessionInfo type, SessionPickerPage with create/delete/select, LoginPage redirects to /sessions, TerminalPage wired to sessionId)
+**Last completed:** Phase 10 - Plugin System (Plugin ABC, PluginManager with auto-discovery, Shell + Claude Code plugins, /api/plugins endpoints, plugin-aware session creation, frontend plugin selector)
 
 ## Development Rhythm
 
@@ -65,7 +65,7 @@ Single connection per server at `/ws/terminal`. JSON messages:
 | 7 | Terminal UI - xterm.js, mobile input, resize | COMPLETE |
 | 8 | Server Management - add/edit/remove, IndexedDB | COMPLETE |
 | 9 | Session Management - picker, resume, status | COMPLETE |
-| 10 | Plugin System - base class, manager, Claude Code | NOT STARTED |
+| 10 | Plugin System - base class, manager, Claude Code | COMPLETE |
 | 11 | Quick Actions - plugin-driven action bar | NOT STARTED |
 | 12 | QR Code Pairing - tunnel + scanner | NOT STARTED |
 | 13 | Polish - audit, errors, PWA icons, offline | NOT STARTED |
