@@ -6,9 +6,9 @@ ARC4DE (Automated Remote Control for Distributed Environments, pronounced "Arcad
 
 ## Current State
 
-**Phase:** Phase 9 - Session Management (NOT STARTED)
+**Phase:** Phase 10 - (NOT STARTED)
 **Branch:** master
-**Last completed:** Phase 8 - Server Management (ServerConfig types, idb-keyval storage, Zustand server store, ServerListPage, LoginPage, TerminalPage wired to server store)
+**Last completed:** Phase 9 - Session Management (SessionInfo type, SessionPickerPage with create/delete/select, LoginPage redirects to /sessions, TerminalPage wired to sessionId)
 
 ## Development Rhythm
 
