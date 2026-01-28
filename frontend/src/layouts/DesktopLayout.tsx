@@ -52,7 +52,7 @@ export function DesktopLayout() {
 
       {/* Main content with max-width container */}
       <main className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-3xl px-10 py-10">
+        <div className="mx-auto" style={{ maxWidth: '768px', padding: '40px' }}>
           <Outlet />
         </div>
       </main>
