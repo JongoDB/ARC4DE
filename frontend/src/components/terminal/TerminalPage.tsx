@@ -4,7 +4,8 @@ import { useTerminal } from "@/hooks/useTerminal";
 import { WebSocketService } from "@/services/websocket";
 import { useDeviceClass } from "@/hooks/useDeviceClass";
 import { useServerStore } from "@/stores/serverStore";
-import type { WsConnectionState } from "@/types";
+import { QuickActionBar } from "./QuickActionBar";
+import type { WsConnectionState, QuickAction } from "@/types";
 
 const STATUS_LABELS: Record<WsConnectionState, string> = {
   disconnected: "Disconnected",
@@ -31,6 +32,7 @@ export function TerminalPage() {
   const wsRef = useRef<WebSocketService | null>(null);
   const [connState, setConnState] = useState<WsConnectionState>("disconnected");
   const [mobileInput, setMobileInput] = useState("");
+  const [quickActions, setQuickActions] = useState<QuickAction[]>([]);
 
   const navigate = useNavigate();
   const { activeConnection, servers } = useServerStore();
@@ -93,12 +95,46 @@ export function TerminalPage() {
     fit();
   }, [fit, deviceClass]);
 
+  // Fetch quick actions for the current plugin
+  useEffect(() => {
+    if (!activeConnection?.plugin || !activeServer) {
+      setQuickActions([]);
+      return;
+    }
+
+    const fetchActions = async () => {
+      try {
+        const resp = await fetch(
+          `${activeServer.url}/api/plugins/${activeConnection.plugin}`,
+          {
+            headers: { Authorization: `Bearer ${activeConnection.accessToken}` },
+          }
+        );
+        if (resp.ok) {
+          const data = await resp.json();
+          setQuickActions(data.quick_actions ?? []);
+        }
+      } catch {
+        // Non-critical - action bar just won't show
+      }
+    };
+
+    fetchActions();
+  }, [activeConnection?.plugin, activeConnection?.accessToken, activeServer]);
+
   const handleMobileSubmit = useCallback(() => {
     if (mobileInput.trim()) {
       ws.sendInput(mobileInput + "\n");
       setMobileInput("");
     }
   }, [mobileInput, ws]);
+
+  const handleQuickAction = useCallback(
+    (command: string) => {
+      ws.sendInput(command + "\n");
+    },
+    [ws]
+  );
 
   return (
     <div className="flex h-full flex-col">
@@ -112,6 +148,13 @@ export function TerminalPage() {
           {STATUS_LABELS[connState]}
         </span>
       </div>
+
+      {/* Quick action bar */}
+      <QuickActionBar
+        actions={quickActions}
+        onAction={handleQuickAction}
+        disabled={connState !== "connected"}
+      />
 
       {/* Terminal container */}
       <div ref={terminalRef} className="min-h-0 flex-1" />
