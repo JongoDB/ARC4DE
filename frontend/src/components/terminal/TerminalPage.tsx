@@ -51,6 +51,10 @@ export function TerminalPage() {
       navigate("/");
       return;
     }
+    if (!activeConnection.sessionId) {
+      navigate("/sessions");
+      return;
+    }
 
     const disposables: { dispose: () => void }[] = [];
 
@@ -71,8 +75,12 @@ export function TerminalPage() {
       terminal.onResize(({ cols, rows }) => ws.sendResize(cols, rows)),
     );
 
-    // Connect using stored token and server URL
-    ws.connect(activeConnection.accessToken, undefined, activeServer.url);
+    // Connect using stored token, session ID, and server URL
+    ws.connect(
+      activeConnection.accessToken,
+      activeConnection.sessionId,
+      activeServer.url,
+    );
 
     return () => {
       disposables.forEach((d) => d.dispose());
