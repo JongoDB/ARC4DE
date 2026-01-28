@@ -6,9 +6,9 @@ ARC4DE (Automated Remote Control for Distributed Environments, pronounced "Arcad
 
 ## Current State
 
-**Phase:** Phase 8 - Server Management (NOT STARTED)
+**Phase:** Phase 9 - Session Management (NOT STARTED)
 **Branch:** master
-**Last completed:** Phase 7 - Terminal UI (xterm.js, WebSocket service, mobile input bar, E2E verified)
+**Last completed:** Phase 8 - Server Management (ServerConfig types, idb-keyval storage, Zustand server store, ServerListPage, LoginPage, TerminalPage wired to server store)
 
 ## Development Rhythm
 
@@ -63,7 +63,7 @@ Single connection per server at `/ws/terminal`. JSON messages:
 | 5 | WebSocket Terminal - PTY/tmux/WS bridge | COMPLETE |
 | 6 | Frontend Shell - routing, adaptive layouts | COMPLETE |
 | 7 | Terminal UI - xterm.js, mobile input, resize | COMPLETE |
-| 8 | Server Management - add/edit/remove, IndexedDB | NOT STARTED |
+| 8 | Server Management - add/edit/remove, IndexedDB | COMPLETE |
 | 9 | Session Management - picker, resume, status | NOT STARTED |
 | 10 | Plugin System - base class, manager, Claude Code | NOT STARTED |
 | 11 | Quick Actions - plugin-driven action bar | NOT STARTED |
