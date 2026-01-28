@@ -6,19 +6,16 @@ import { useDeviceClass } from "@/hooks/useDeviceClass";
 import { useServerStore } from "@/stores/serverStore";
 import { QuickActionBar } from "./QuickActionBar";
 import type { WsConnectionState, QuickAction } from "@/types";
+import { ArrowLeft, Wifi, WifiOff, Loader2 } from "lucide-react";
 
-const STATUS_LABELS: Record<WsConnectionState, string> = {
-  disconnected: "Disconnected",
-  connecting: "Connecting...",
-  authenticating: "Authenticating...",
-  connected: "Connected",
-};
-
-const STATUS_COLORS: Record<WsConnectionState, string> = {
-  disconnected: "var(--color-error)",
-  connecting: "var(--color-warning)",
-  authenticating: "var(--color-warning)",
-  connected: "var(--color-success)",
+const STATUS_CONFIG: Record<
+  WsConnectionState,
+  { label: string; color: string; Icon: typeof Wifi }
+> = {
+  disconnected: { label: "Disconnected", color: "var(--color-error)", Icon: WifiOff },
+  connecting: { label: "Connecting", color: "var(--color-warning)", Icon: Loader2 },
+  authenticating: { label: "Authenticating", color: "var(--color-warning)", Icon: Loader2 },
+  connected: { label: "Connected", color: "var(--color-success)", Icon: Wifi },
 };
 
 export function TerminalPage() {
@@ -136,17 +133,36 @@ export function TerminalPage() {
     [ws]
   );
 
+  const status = STATUS_CONFIG[connState];
+  const StatusIcon = status.Icon;
+
   return (
     <div className="flex h-full flex-col">
       {/* Status bar */}
-      <div className="flex h-8 shrink-0 items-center gap-2 border-b border-[var(--color-bg-tertiary)] bg-[var(--color-bg-secondary)] px-3">
-        <span
-          className="inline-block h-2 w-2 rounded-full"
-          style={{ backgroundColor: STATUS_COLORS[connState] }}
-        />
-        <span className="text-xs text-[var(--color-text-secondary)]">
-          {STATUS_LABELS[connState]}
-        </span>
+      <div className="flex h-11 shrink-0 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-4">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate("/sessions")}
+            className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]"
+          >
+            <ArrowLeft size={16} />
+          </button>
+          <div className="flex items-center gap-2">
+            <StatusIcon
+              size={14}
+              style={{ color: status.color }}
+              className={connState === "connecting" || connState === "authenticating" ? "animate-spin" : ""}
+            />
+            <span className="text-sm text-[var(--color-text-secondary)]">
+              {status.label}
+            </span>
+          </div>
+        </div>
+        {activeServer && (
+          <div className="text-sm text-[var(--color-text-muted)]">
+            {activeServer.name}
+          </div>
+        )}
       </div>
 
       {/* Quick action bar */}
@@ -161,7 +177,7 @@ export function TerminalPage() {
 
       {/* Mobile input bar */}
       {isMobile && (
-        <div className="flex h-12 shrink-0 items-center gap-2 border-t border-[var(--color-bg-tertiary)] bg-[var(--color-bg-secondary)] px-3">
+        <div className="flex h-12 shrink-0 items-center gap-2 border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-3">
           <input
             type="text"
             value={mobileInput}
