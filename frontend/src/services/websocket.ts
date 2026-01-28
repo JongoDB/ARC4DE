@@ -19,6 +19,7 @@ export class WebSocketService {
   private disposed = false;
   private token = "";
   private sessionId: string | undefined;
+  private baseUrl: string | undefined;
   private _state: WsConnectionState = "disconnected";
 
   get state(): WsConnectionState {
@@ -29,9 +30,10 @@ export class WebSocketService {
     this.handlers = handlers;
   }
 
-  connect(token: string, sessionId?: string): void {
+  connect(token: string, sessionId?: string, baseUrl?: string): void {
     this.token = token;
     this.sessionId = sessionId;
+    this.baseUrl = baseUrl;
     this.disposed = false;
     this.reconnectAttempt = 0;
     this._connect();
@@ -55,8 +57,15 @@ export class WebSocketService {
     this._cleanup();
     this._setState("connecting");
 
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const url = `${protocol}//${window.location.host}/ws/terminal`;
+    let url: string;
+    if (this.baseUrl) {
+      // Convert http(s):// to ws(s)://
+      const wsBase = this.baseUrl.replace(/^http/, "ws");
+      url = `${wsBase}/ws/terminal`;
+    } else {
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      url = `${protocol}//${window.location.host}/ws/terminal`;
+    }
 
     this.ws = new WebSocket(url);
 

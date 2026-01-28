@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTerminal } from "@/hooks/useTerminal";
 import { WebSocketService } from "@/services/websocket";
 import { useDeviceClass } from "@/hooks/useDeviceClass";
+import { useServerStore } from "@/stores/serverStore";
 import type { WsConnectionState } from "@/types";
 
 const STATUS_LABELS: Record<WsConnectionState, string> = {
@@ -30,6 +32,12 @@ export function TerminalPage() {
   const [connState, setConnState] = useState<WsConnectionState>("disconnected");
   const [mobileInput, setMobileInput] = useState("");
 
+  const navigate = useNavigate();
+  const { activeConnection, servers } = useServerStore();
+  const activeServer = servers.find(
+    (s) => s.id === activeConnection?.serverId,
+  );
+
   // Create WebSocket service once
   if (!wsRef.current) {
     wsRef.current = new WebSocketService();
@@ -39,6 +47,10 @@ export function TerminalPage() {
   // Wire terminal <-> WebSocket
   useEffect(() => {
     if (!terminal) return;
+    if (!activeConnection || !activeServer) {
+      navigate("/");
+      return;
+    }
 
     const disposables: { dispose: () => void }[] = [];
 
@@ -59,28 +71,14 @@ export function TerminalPage() {
       terminal.onResize(({ cols, rows }) => ws.sendResize(cols, rows)),
     );
 
-    // Auto-connect: get a token and connect
-    // (Temporary — Phase 8 will use stored auth tokens)
-    fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password: "changeme" }),
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.access_token) {
-          ws.connect(data.access_token);
-        }
-      })
-      .catch(() => {
-        terminal.writeln("\x1b[31m[Error] Failed to authenticate\x1b[0m");
-      });
+    // Connect using stored token and server URL
+    ws.connect(activeConnection.accessToken, undefined, activeServer.url);
 
     return () => {
       disposables.forEach((d) => d.dispose());
       ws.disconnect();
     };
-  }, [terminal, ws]);
+  }, [terminal, ws, activeConnection, activeServer, navigate]);
 
   // Refit terminal when layout changes
   useEffect(() => {
