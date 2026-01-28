@@ -18,7 +18,7 @@ export function TabletLayout() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex flex-col gap-2">
+        <nav className="flex flex-1 flex-col gap-2">
           {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
@@ -37,6 +37,11 @@ export function TabletLayout() {
             </NavLink>
           ))}
         </nav>
+
+        {/* Version */}
+        <span className="text-[10px] text-[var(--color-text-muted)]">
+          v{__APP_VERSION__}
+        </span>
       </aside>
 
       {/* Main content */}

@@ -41,6 +41,13 @@ export function DesktopLayout() {
             ))}
           </div>
         </nav>
+
+        {/* Version */}
+        <div className="px-5 py-4">
+          <span className="text-xs text-[var(--color-text-muted)]">
+            v{__APP_VERSION__}
+          </span>
+        </div>
       </aside>
 
       {/* Main content with max-width container */}

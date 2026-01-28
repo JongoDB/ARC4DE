@@ -11,9 +11,12 @@ export function MobileLayout() {
   return (
     <div className="flex h-screen flex-col bg-[var(--color-bg-primary)]">
       {/* Header */}
-      <header className="flex h-14 shrink-0 items-center justify-center border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+      <header className="flex h-14 shrink-0 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-4">
         <span className="text-lg font-bold text-[var(--color-text-primary)]">
           ARC<span className="text-[var(--color-accent)]">4</span>DE
+        </span>
+        <span className="text-xs text-[var(--color-text-muted)]">
+          v{__APP_VERSION__}
         </span>
       </header>
 
