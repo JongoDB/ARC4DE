@@ -7,7 +7,6 @@ import {
   Plus,
   Trash2,
   Terminal,
-  Layers,
   LogOut,
 } from "lucide-react";
 
