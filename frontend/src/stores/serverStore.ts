@@ -7,6 +7,7 @@ interface ServerConnection {
   accessToken: string;
   connectedAt: number;
   sessionId?: string;
+  plugin?: string;
 }
 
 interface ServerState {
@@ -19,7 +20,7 @@ interface ServerState {
   updateServer: (id: string, name: string, url: string) => Promise<void>;
   removeServer: (id: string) => Promise<void>;
   setConnection: (serverId: string, accessToken: string) => void;
-  setSession: (sessionId: string) => void;
+  setSession: (sessionId: string, plugin?: string) => void;
   clearConnection: () => void;
 }
 
@@ -70,10 +71,10 @@ export const useServerStore = create<ServerState>()((set, get) => ({
     });
   },
 
-  setSession: (sessionId) => {
+  setSession: (sessionId, plugin) => {
     const conn = get().activeConnection;
     if (conn) {
-      set({ activeConnection: { ...conn, sessionId } });
+      set({ activeConnection: { ...conn, sessionId, plugin } });
     }
   },
 
