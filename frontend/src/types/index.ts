@@ -40,3 +40,11 @@ export interface ServerConfig {
   url: string;
   addedAt: number;
 }
+
+export interface SessionInfo {
+  session_id: string;
+  name: string;
+  tmux_name: string;
+  state: string;
+  created_at: string;
+}

@@ -6,6 +6,7 @@ interface ServerConnection {
   serverId: string;
   accessToken: string;
   connectedAt: number;
+  sessionId?: string;
 }
 
 interface ServerState {
@@ -18,6 +19,7 @@ interface ServerState {
   updateServer: (id: string, name: string, url: string) => Promise<void>;
   removeServer: (id: string) => Promise<void>;
   setConnection: (serverId: string, accessToken: string) => void;
+  setSession: (sessionId: string) => void;
   clearConnection: () => void;
 }
 
@@ -66,6 +68,13 @@ export const useServerStore = create<ServerState>()((set, get) => ({
     set({
       activeConnection: { serverId, accessToken, connectedAt: Date.now() },
     });
+  },
+
+  setSession: (sessionId) => {
+    const conn = get().activeConnection;
+    if (conn) {
+      set({ activeConnection: { ...conn, sessionId } });
+    }
   },
 
   clearConnection: () => {
