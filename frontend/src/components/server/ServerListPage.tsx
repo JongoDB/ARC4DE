@@ -70,11 +70,9 @@ export function ServerListPage() {
   }
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto">
-      {/* Mobile padding wrapper */}
-      <div className="px-5 py-8 sm:p-0">
-        {/* Header */}
-        <div className="mb-8 flex items-center justify-between gap-4">
+    <div>
+      {/* Header */}
+      <div className="mb-8 flex items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
               Servers
@@ -225,7 +223,6 @@ export function ServerListPage() {
             </div>
           ))}
         </div>
-      </div>
     </div>
   );
 }
