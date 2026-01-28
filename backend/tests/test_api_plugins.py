@@ -85,6 +85,28 @@ class TestGetPlugin:
         resp = client.get("/api/plugins/shell")
         assert resp.status_code == 401
 
+    def test_get_plugin_includes_quick_actions(self, client, auth_headers):
+        """Plugin detail endpoint should include quick_actions array."""
+        resp = client.get("/api/plugins/shell", headers=auth_headers)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert "quick_actions" in data
+        assert isinstance(data["quick_actions"], list)
+        # Shell plugin should have at least Clear and Exit
+        labels = [a["label"] for a in data["quick_actions"]]
+        assert "Clear" in labels
+        assert "Exit" in labels
+
+    def test_quick_action_structure(self, client, auth_headers):
+        """Each quick action should have label, command, and icon."""
+        resp = client.get("/api/plugins/shell", headers=auth_headers)
+        assert resp.status_code == 200
+        data = resp.json()
+        for action in data["quick_actions"]:
+            assert "label" in action
+            assert "command" in action
+            assert "icon" in action
+
 
 class TestGetPluginHealth:
     def test_health_endpoint(self, client, auth_headers):
