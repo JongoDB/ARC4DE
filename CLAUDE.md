@@ -64,7 +64,7 @@ Single connection per server at `/ws/terminal`. JSON messages:
 | 6 | Frontend Shell - routing, adaptive layouts | COMPLETE |
 | 7 | Terminal UI - xterm.js, mobile input, resize | COMPLETE |
 | 8 | Server Management - add/edit/remove, IndexedDB | COMPLETE |
-| 9 | Session Management - picker, resume, status | NOT STARTED |
+| 9 | Session Management - picker, resume, status | COMPLETE |
 | 10 | Plugin System - base class, manager, Claude Code | NOT STARTED |
 | 11 | Quick Actions - plugin-driven action bar | NOT STARTED |
 | 12 | QR Code Pairing - tunnel + scanner | NOT STARTED |
