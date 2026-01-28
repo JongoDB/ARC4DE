@@ -33,3 +33,10 @@ export interface WsServerMessage {
   data?: string;
   message?: string;
 }
+
+export interface ServerConfig {
+  id: string;
+  name: string;
+  url: string;
+  addedAt: number;
+}
