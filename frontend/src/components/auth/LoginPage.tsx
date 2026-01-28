@@ -46,7 +46,7 @@ export function LoginPage() {
 
       const data = await resp.json();
       setConnection(server.id, data.access_token);
-      navigate("/terminal");
+      navigate("/sessions");
     } catch {
       setError("Could not reach server. Check the URL and try again.");
       setSubmitting(false);
