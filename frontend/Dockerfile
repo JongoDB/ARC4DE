@@ -7,6 +7,10 @@ RUN npm ci
 
 COPY . .
 
+# Build for production
+RUN npm run build
+
 EXPOSE 5175
 
-CMD ["npm", "run", "dev"]
+# Serve the production build
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "5175"]
