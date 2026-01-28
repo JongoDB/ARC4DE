@@ -6,9 +6,9 @@ ARC4DE (Automated Remote Control for Distributed Environments, pronounced "Arcad
 
 ## Current State
 
-**Phase:** Phase 7 - Terminal UI (NOT STARTED)
+**Phase:** Phase 8 - Server Management (NOT STARTED)
 **Branch:** master
-**Last completed:** Phase 6 - Frontend Shell (React Router, adaptive layouts, useDeviceClass hook)
+**Last completed:** Phase 7 - Terminal UI (xterm.js, WebSocket service, mobile input bar, E2E verified)
 
 ## Development Rhythm
 
@@ -62,7 +62,7 @@ Single connection per server at `/ws/terminal`. JSON messages:
 | 4 | tmux Integration - session management wrapper | COMPLETE |
 | 5 | WebSocket Terminal - PTY/tmux/WS bridge | COMPLETE |
 | 6 | Frontend Shell - routing, adaptive layouts | COMPLETE |
-| 7 | Terminal UI - xterm.js, mobile input, resize | NOT STARTED |
+| 7 | Terminal UI - xterm.js, mobile input, resize | COMPLETE |
 | 8 | Server Management - add/edit/remove, IndexedDB | NOT STARTED |
 | 9 | Session Management - picker, resume, status | NOT STARTED |
 | 10 | Plugin System - base class, manager, Claude Code | NOT STARTED |
@@ -125,6 +125,15 @@ docker-compose up --build
 # Tests inside Docker
 docker-compose exec backend python -m pytest tests/ -v
 ```
+
+## Known TODOs
+
+### PWA Mobile Install (Phase 13)
+Mobile browsers cannot install the app as a PWA yet. Desktop works. Fixes needed:
+- **HTTPS**: Add `@vitejs/plugin-basic-ssl` or mkcert for dev; mobile browsers have no localhost exception
+- **Service worker**: Add `devOptions: { enabled: true }` to VitePWA config; import `virtual:pwa-register` in `main.tsx`
+- **Icons**: Current PNGs are RGB (no alpha). Regenerate as RGBA for Android `maskable` purpose to render correctly
+- **apple-touch-icon**: iOS recommends 180x180; current uses 192x192
 
 ## Key Docs
 
