@@ -24,7 +24,7 @@ export function QuickActionBar({
   if (actions.length === 0) return null;
 
   return (
-    <div className="flex h-11 shrink-0 items-center gap-2 border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-4 overflow-x-auto">
+    <div className="flex h-12 shrink-0 items-center gap-2 border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-4 overflow-x-auto">
       {actions.map((action) => {
         const Icon = ICON_MAP[action.icon];
         return (
@@ -32,10 +32,10 @@ export function QuickActionBar({
             key={action.command}
             onClick={() => onAction(action.command)}
             disabled={disabled}
-            className="flex shrink-0 items-center gap-2 rounded-lg bg-[var(--color-bg-tertiary)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-primary)] transition-all hover:bg-[var(--color-accent-muted)] hover:text-[var(--color-accent)] disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-10 shrink-0 items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-4 text-sm font-medium text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-bg-elevated)] disabled:cursor-not-allowed disabled:opacity-50"
             title={action.command}
           >
-            {Icon && <Icon size={14} />}
+            {Icon && <Icon size={16} />}
             <span>{action.label}</span>
           </button>
         );

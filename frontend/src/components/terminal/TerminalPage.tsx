@@ -139,27 +139,27 @@ export function TerminalPage() {
   return (
     <div className="flex h-full flex-col">
       {/* Status bar */}
-      <div className="flex h-11 shrink-0 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-4">
+      <div className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-4">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/sessions")}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]"
+            className="flex h-11 w-11 items-center justify-center rounded-lg text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]"
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={18} />
           </button>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <StatusIcon
-              size={14}
+              size={18}
               style={{ color: status.color }}
               className={connState === "connecting" || connState === "authenticating" ? "animate-spin" : ""}
             />
-            <span className="text-sm text-[var(--color-text-secondary)]">
+            <span className="text-sm font-medium">
               {status.label}
             </span>
           </div>
         </div>
         {activeServer && (
-          <div className="text-sm text-[var(--color-text-muted)]">
+          <div className="text-sm text-[var(--color-text-secondary)]">
             {activeServer.name}
           </div>
         )}
@@ -177,7 +177,7 @@ export function TerminalPage() {
 
       {/* Mobile input bar */}
       {isMobile && (
-        <div className="flex h-12 shrink-0 items-center gap-2 border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-3">
+        <div className="flex h-14 shrink-0 items-center gap-3 border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-4">
           <input
             type="text"
             value={mobileInput}
@@ -186,7 +186,7 @@ export function TerminalPage() {
               if (e.key === "Enter") handleMobileSubmit();
             }}
             placeholder="Type command..."
-            className="flex-1 rounded bg-[var(--color-bg-tertiary)] px-3 py-1.5 font-mono text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-secondary)] focus:ring-1 focus:ring-[var(--color-accent)]"
+            className="h-11 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-4 font-mono text-sm text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)]"
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
@@ -194,7 +194,7 @@ export function TerminalPage() {
           />
           <button
             onClick={handleMobileSubmit}
-            className="rounded bg-[var(--color-accent)] px-3 py-1.5 text-sm font-medium text-white hover:bg-[var(--color-accent-hover)]"
+            className="h-11 rounded-lg bg-[var(--color-accent)] px-5 text-sm font-medium text-white transition-colors hover:bg-[var(--color-accent-hover)]"
           >
             Run
           </button>
