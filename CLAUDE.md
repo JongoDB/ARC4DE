@@ -6,9 +6,9 @@ ARC4DE (Automated Remote Control for Distributed Environments, pronounced "Arcad
 
 ## Current State
 
-**Phase:** Phase 11 - Quick Actions (NOT STARTED)
+**Phase:** Phase 12 - QR Code Pairing (NOT STARTED)
 **Branch:** master
-**Last completed:** Phase 10 - Plugin System (Plugin ABC, PluginManager with auto-discovery, Shell + Claude Code plugins, /api/plugins endpoints, plugin-aware session creation, frontend plugin selector)
+**Last completed:** Phase 11 - Quick Actions (Plugin-driven action bar with Clear/Exit for Shell, Claude Code actions, QuickActionBar component, plugin-aware terminal page)
 
 ## Development Rhythm
 
@@ -66,7 +66,7 @@ Single connection per server at `/ws/terminal`. JSON messages:
 | 8 | Server Management - add/edit/remove, IndexedDB | COMPLETE |
 | 9 | Session Management - picker, resume, status | COMPLETE |
 | 10 | Plugin System - base class, manager, Claude Code | COMPLETE |
-| 11 | Quick Actions - plugin-driven action bar | NOT STARTED |
+| 11 | Quick Actions - plugin-driven action bar | COMPLETE |
 | 12 | QR Code Pairing - tunnel + scanner | NOT STARTED |
 | 13 | Polish - audit, errors, PWA icons, offline | NOT STARTED |
 
