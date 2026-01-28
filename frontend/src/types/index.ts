@@ -47,4 +47,24 @@ export interface SessionInfo {
   tmux_name: string;
   state: string;
   created_at: string;
+  plugin: string;
+}
+
+export interface QuickAction {
+  label: string;
+  command: string;
+  icon: string;
+}
+
+export interface PluginHealth {
+  available: boolean;
+  message: string | null;
+}
+
+export interface PluginInfo {
+  name: string;
+  display_name: string;
+  command: string;
+  quick_actions: QuickAction[];
+  health: PluginHealth;
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useServerStore } from "@/stores/serverStore";
-import type { SessionInfo } from "@/types";
+import type { SessionInfo, PluginInfo } from "@/types";
 
 function relativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -29,6 +29,8 @@ export function SessionPickerPage() {
   const [name, setName] = useState("");
   const [creating, setCreating] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [plugins, setPlugins] = useState<PluginInfo[]>([]);
+  const [selectedPlugin, setSelectedPlugin] = useState("shell");
 
   // Redirect if not connected to a server
   useEffect(() => {
@@ -58,6 +60,23 @@ export function SessionPickerPage() {
     fetchSessions();
   }, [fetchSessions]);
 
+  // Fetch available plugins on mount
+  useEffect(() => {
+    if (!activeServer || !activeConnection) return;
+    (async () => {
+      try {
+        const resp = await fetch(`${activeServer.url}/api/plugins`, {
+          headers: { Authorization: `Bearer ${activeConnection.accessToken}` },
+        });
+        if (!resp.ok) return;
+        const data: PluginInfo[] = await resp.json();
+        setPlugins(data);
+      } catch {
+        // Non-critical — plugin selector simply won't render
+      }
+    })();
+  }, [activeServer, activeConnection]);
+
   const handleCreate = async () => {
     const trimmed = name.trim();
     if (!trimmed || !activeServer || !activeConnection) return;
@@ -69,10 +88,11 @@ export function SessionPickerPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${activeConnection.accessToken}`,
         },
-        body: JSON.stringify({ name: trimmed }),
+        body: JSON.stringify({ name: trimmed, plugin: selectedPlugin }),
       });
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       setName("");
+      setSelectedPlugin("shell");
       setShowForm(false);
       await fetchSessions();
     } catch {
@@ -171,6 +191,29 @@ export function SessionPickerPage() {
             New Session
           </h2>
           <div className="space-y-3">
+            {/* Plugin selector */}
+            {plugins.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {plugins.map((p) => (
+                  <button
+                    key={p.name}
+                    type="button"
+                    disabled={!p.health.available}
+                    onClick={() => setSelectedPlugin(p.name)}
+                    className={`rounded px-3 py-1.5 text-sm font-medium transition-colors ${
+                      selectedPlugin === p.name
+                        ? "bg-[var(--color-accent)] text-white"
+                        : p.health.available
+                          ? "bg-[var(--color-bg-tertiary)] text-[var(--color-text-primary)] hover:bg-[var(--color-accent)]/20"
+                          : "cursor-not-allowed bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] opacity-50"
+                    }`}
+                  >
+                    {p.display_name}
+                    {!p.health.available && " (unavailable)"}
+                  </button>
+                ))}
+              </div>
+            )}
             <input
               type="text"
               value={name}
@@ -239,6 +282,12 @@ export function SessionPickerPage() {
                 <span className="text-sm font-medium text-[var(--color-text-primary)]">
                   {session.name}
                 </span>
+                {session.plugin && session.plugin !== "shell" && (
+                  <span className="rounded bg-[var(--color-bg-tertiary)] px-1.5 py-0.5 text-xs text-[var(--color-text-secondary)]">
+                    {plugins.find((p) => p.name === session.plugin)
+                      ?.display_name ?? session.plugin}
+                  </span>
+                )}
               </div>
               <div className="mt-0.5 flex gap-2 pl-4 text-xs text-[var(--color-text-secondary)]">
                 <span>
