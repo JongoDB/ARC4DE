@@ -194,6 +194,8 @@ export function SessionPickerPage() {
             onClick={() => {
               setShowForm(true);
               setName("");
+              setCreating(false);
+              setSelectedPlugin("shell");
               setConfirmDeleteId(null);
             }}
             className="group flex w-full items-center gap-4 rounded-xl border border-dashed border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-4 transition-all hover:border-[var(--color-accent)] hover:bg-[var(--color-bg-tertiary)]"

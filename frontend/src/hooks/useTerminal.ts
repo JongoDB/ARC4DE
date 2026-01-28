@@ -10,14 +10,14 @@ export interface UseTerminalOptions {
 }
 
 export interface UseTerminalResult {
-  terminalRef: React.RefObject<HTMLDivElement | null>;
+  terminalRef: React.RefObject<HTMLDivElement>;
   terminal: Terminal | null;
   fit: () => void;
 }
 
 export function useTerminal(options: UseTerminalOptions = {}): UseTerminalResult {
   const { fontSize = 14, enableWebgl = true } = options;
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [terminal, setTerminal] = useState<Terminal | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
 
