@@ -11,28 +11,43 @@ from app.api.sessions import router as sessions_router
 from app.api.tunnel import router as tunnel_router, set_tunnel_manager
 from app.config import settings
 from app.core.tmux import TmuxManager
+from app.core.tunnel import TunnelManager
 from app.plugins.manager import PluginManager
 from app.ws.terminal import terminal_handler
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Start background cleanup and plugin discovery on startup."""
+    """Start background cleanup, plugins, and tunnel on startup."""
     # Plugin discovery
     plugin_mgr = PluginManager()
     plugin_mgr.discover(Path(__file__).resolve().parent / "plugins")
     await plugin_mgr.initialize_all()
     set_plugin_manager(plugin_mgr)
 
+    # Tunnel manager
+    tunnel_mgr = TunnelManager()
+    set_tunnel_manager(tunnel_mgr)
+
+    # Start session tunnel if enabled
+    if settings.tunnel_enabled:
+        await tunnel_mgr.start_session_tunnel(port=settings.tunnel_port)
+
     # Session cleanup loop
     manager = TmuxManager()
     task = asyncio.create_task(_cleanup_loop(manager))
+
     yield
+
+    # Shutdown
     task.cancel()
     try:
         await task
     except asyncio.CancelledError:
         pass
+
+    # Stop tunnel
+    await tunnel_mgr.stop_session_tunnel()
 
 
 async def _cleanup_loop(manager: TmuxManager) -> None:
