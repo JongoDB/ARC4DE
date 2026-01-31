@@ -46,3 +46,10 @@ logs/
 htmlcov/
 .coverage
 coverage/
+
+# Generated files
+tunnel_qr.png
+frontend/dev-dist/
+
+# Playwright screenshots
+.playwright-mcp/

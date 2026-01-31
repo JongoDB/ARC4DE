@@ -25,6 +25,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5175:5175"
+    environment:
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
     volumes:
       - ./frontend:/app
       - /app/node_modules

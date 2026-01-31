@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Server, Pencil, Trash2, ExternalLink } from "lucide-react";
+import { Plus, Server, Pencil, Trash2, ExternalLink, QrCode } from "lucide-react";
 import { useServerStore } from "@/stores/serverStore";
+import { QRScanner } from "@/components/QRScanner";
 import type { ServerConfig } from "@/types";
 
 export function ServerListPage() {
@@ -10,10 +11,29 @@ export function ServerListPage() {
     useServerStore();
 
   const [showForm, setShowForm] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  // Handle QR code scan result
+  const handleQRScan = (scannedUrl: string) => {
+    setUrl(scannedUrl);
+    setShowScanner(false);
+    // Auto-generate a name from the URL if empty
+    if (!name) {
+      try {
+        const urlObj = new URL(scannedUrl);
+        const hostname = urlObj.hostname;
+        // Use first part of hostname as name
+        const namePart = hostname.split(".")[0];
+        setName(namePart.charAt(0).toUpperCase() + namePart.slice(1));
+      } catch {
+        // Ignore URL parsing errors
+      }
+    }
+  };
 
   useEffect(() => {
     init();
@@ -183,28 +203,60 @@ export function ServerListPage() {
               }}>
                 Server URL
               </label>
-              <input
-                type="text"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="e.g. https://myserver.example.com"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSubmit();
-                }}
-                style={{
-                  width: '100%',
-                  height: '48px',
-                  padding: '0 16px',
-                  borderRadius: '8px',
-                  backgroundColor: 'var(--color-bg-primary)',
-                  border: '1px solid transparent',
-                  color: 'var(--color-text-primary)',
-                  fontSize: '15px',
-                  outline: 'none',
-                }}
-                onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-accent)'}
-                onBlur={(e) => e.currentTarget.style.borderColor = 'transparent'}
-              />
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <input
+                  type="text"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="e.g. https://myserver.example.com"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSubmit();
+                  }}
+                  style={{
+                    flex: 1,
+                    height: '48px',
+                    padding: '0 16px',
+                    borderRadius: '8px',
+                    backgroundColor: 'var(--color-bg-primary)',
+                    border: '1px solid transparent',
+                    color: 'var(--color-text-primary)',
+                    fontSize: '15px',
+                    outline: 'none',
+                  }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-accent)'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = 'transparent'}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowScanner(true)}
+                  title="Scan QR Code"
+                  style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '8px',
+                    backgroundColor: 'var(--color-bg-primary)',
+                    border: '1px solid var(--color-border)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--color-text-secondary)',
+                    flexShrink: 0,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--color-bg-elevated)';
+                    e.currentTarget.style.color = 'var(--color-accent)';
+                    e.currentTarget.style.borderColor = 'var(--color-accent)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--color-bg-primary)';
+                    e.currentTarget.style.color = 'var(--color-text-secondary)';
+                    e.currentTarget.style.borderColor = 'var(--color-border)';
+                  }}
+                >
+                  <QrCode size={22} />
+                </button>
+              </div>
             </div>
             <div style={{ display: 'flex', gap: '12px', paddingTop: '4px' }}>
               <button
@@ -448,6 +500,14 @@ export function ServerListPage() {
           </div>
         ))}
       </div>
+
+      {/* QR Scanner Modal */}
+      {showScanner && (
+        <QRScanner
+          onScan={handleQRScan}
+          onClose={() => setShowScanner(false)}
+        />
+      )}
     </div>
   );
 }

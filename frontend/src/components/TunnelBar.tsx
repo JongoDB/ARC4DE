@@ -6,14 +6,10 @@ import { useServerStore } from "@/stores/serverStore";
 
 const POLL_INTERVAL_MS = 30000; // 30 seconds
 
-// Check if we're accessing locally or via tunnel (can fetch tunnel info directly)
+// Always fetch tunnel info from current origin since we're accessing the app directly
+// This works for localhost, trycloudflare.com, and custom domains (e.g., arc4de.example.com)
 function canFetchFromOrigin(): boolean {
-  const hostname = window.location.hostname;
-  return (
-    hostname === "localhost" ||
-    hostname === "127.0.0.1" ||
-    hostname.endsWith(".trycloudflare.com")
-  );
+  return true;
 }
 
 export function TunnelBar() {
