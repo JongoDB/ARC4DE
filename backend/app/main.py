@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -14,6 +15,8 @@ from app.core.tmux import TmuxManager
 from app.core.tunnel import TunnelManager
 from app.plugins.manager import PluginManager
 from app.ws.terminal import terminal_handler
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
@@ -31,7 +34,11 @@ async def lifespan(app: FastAPI):
 
     # Start session tunnel if enabled
     if settings.tunnel_enabled:
-        await tunnel_mgr.start_session_tunnel(port=settings.tunnel_port)
+        try:
+            await tunnel_mgr.start_session_tunnel(port=settings.tunnel_port)
+        except Exception as e:
+            logger.error(f"Failed to start tunnel during startup: {e}")
+            # Continue with app startup even if tunnel fails
 
     # Session cleanup loop
     manager = TmuxManager()
@@ -47,7 +54,10 @@ async def lifespan(app: FastAPI):
         pass
 
     # Stop tunnel
-    await tunnel_mgr.stop_session_tunnel()
+    try:
+        await tunnel_mgr.stop_session_tunnel()
+    except Exception as e:
+        logger.error(f"Error during tunnel shutdown: {e}")
 
 
 async def _cleanup_loop(manager: TmuxManager) -> None:
@@ -57,9 +67,9 @@ async def _cleanup_loop(manager: TmuxManager) -> None:
         try:
             removed = await manager.cleanup_expired_sessions()
             if removed:
-                print(f"Cleaned up {len(removed)} expired session(s)")
-        except Exception:
-            pass
+                logger.info(f"Cleaned up {len(removed)} expired session(s)")
+        except Exception as e:
+            logger.error(f"Error during session cleanup: {e}")
 
 
 app = FastAPI(
