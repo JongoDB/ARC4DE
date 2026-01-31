@@ -1,6 +1,6 @@
 # backend/tests/test_tunnel.py
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from app.core.tunnel import parse_tunnel_url, TunnelManager
 
 
@@ -48,3 +48,33 @@ class TestTunnelManager:
         manager = TunnelManager()
         with patch("shutil.which", return_value=None):
             assert manager.is_available() is False
+
+    @pytest.mark.asyncio
+    async def test_start_session_tunnel_success(self):
+        manager = TunnelManager()
+
+        mock_process = MagicMock()
+        mock_process.stderr.readline = MagicMock(side_effect=[
+            b"INF Starting tunnel\n",
+            b"INF https://test-session.trycloudflare.com\n",
+            b"INF Tunnel ready\n",
+        ])
+        mock_process.poll = MagicMock(return_value=None)
+
+        with patch("shutil.which", return_value="/usr/local/bin/cloudflared"):
+            with patch("subprocess.Popen", return_value=mock_process):
+                url = await manager.start_session_tunnel(port=8000)
+
+        assert url == "https://test-session.trycloudflare.com"
+        assert manager.session_url == "https://test-session.trycloudflare.com"
+        assert manager.session_process is mock_process
+
+    @pytest.mark.asyncio
+    async def test_start_session_tunnel_not_available(self):
+        manager = TunnelManager()
+
+        with patch("shutil.which", return_value=None):
+            url = await manager.start_session_tunnel(port=8000)
+
+        assert url is None
+        assert manager.session_url is None
