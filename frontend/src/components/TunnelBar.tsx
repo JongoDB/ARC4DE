@@ -1,15 +1,24 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { Link2, Copy, Check, QrCode, ExternalLink, X } from "lucide-react";
 import { useTunnelStore } from "@/stores/tunnelStore";
 import { useServerStore } from "@/stores/serverStore";
 
 const POLL_INTERVAL_MS = 30000; // 30 seconds
 
+// Check if we're accessing via a Cloudflare tunnel
+function isAccessingViaTunnel(): boolean {
+  return window.location.hostname.endsWith(".trycloudflare.com");
+}
+
 export function TunnelBar() {
-  const { sessionUrl, previews, fetchTunnelInfo } = useTunnelStore();
+  const { sessionUrl, previews, fetchTunnelInfo, fetchTunnelInfoFromOrigin } =
+    useTunnelStore();
   const { servers, activeConnection } = useServerStore();
   const [copied, setCopied] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
+
+  // Determine if we're accessing via tunnel
+  const viaTunnel = useMemo(() => isAccessingViaTunnel(), []);
 
   // Get the server URL for the active connection
   const serverUrl = activeConnection
@@ -17,10 +26,19 @@ export function TunnelBar() {
     : null;
 
   const fetchInfo = useCallback(() => {
-    if (serverUrl && activeConnection?.accessToken) {
+    // If accessing via tunnel, fetch from current origin (no auth needed)
+    if (viaTunnel) {
+      fetchTunnelInfoFromOrigin();
+    } else if (serverUrl && activeConnection?.accessToken) {
       fetchTunnelInfo(serverUrl, activeConnection.accessToken);
     }
-  }, [serverUrl, activeConnection?.accessToken, fetchTunnelInfo]);
+  }, [
+    viaTunnel,
+    serverUrl,
+    activeConnection?.accessToken,
+    fetchTunnelInfo,
+    fetchTunnelInfoFromOrigin,
+  ]);
 
   // Fetch tunnel info on mount and periodically
   useEffect(() => {

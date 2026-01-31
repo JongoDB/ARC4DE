@@ -12,6 +12,7 @@ interface TunnelState {
   error: string | null;
 
   fetchTunnelInfo: (serverUrl: string, token: string) => Promise<void>;
+  fetchTunnelInfoFromOrigin: () => Promise<void>;
   addPreview: (port: number, url: string) => void;
   removePreview: (port: number) => void;
   clearTunnels: () => void;
@@ -29,6 +30,27 @@ export const useTunnelStore = create<TunnelState>()((set, get) => ({
       const response = await fetch(`${serverUrl}/api/tunnel`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      set({
+        sessionUrl: data.session_url,
+        previews: data.previews || [],
+        loading: false,
+      });
+    } catch (e) {
+      set({
+        error: e instanceof Error ? e.message : "Failed to fetch tunnel info",
+        loading: false,
+      });
+    }
+  },
+
+  fetchTunnelInfoFromOrigin: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await fetch("/api/tunnel");
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
