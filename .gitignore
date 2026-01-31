@@ -48,7 +48,6 @@ htmlcov/
 coverage/
 
 # Generated files
-tunnel_qr.png
 frontend/dev-dist/
 
 # Playwright screenshots

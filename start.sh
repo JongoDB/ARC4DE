@@ -76,29 +76,14 @@ try:
     qr.add_data('$session_url')
     qr.make(fit=True)
     matrix = qr.get_matrix()
-
-    # Simple approach: white bg, black blocks
-    # Each row printed with white background
     print()
     for row in matrix:
         line = ''.join(['██' if cell else '  ' for cell in row])
-        # White background (107), black foreground (30)
         print(f'  \033[107;30m{line}\033[0m')
     print()
-
-    # Save PNG backup
-    img = qr.make_image(fill_color='black', back_color='white')
-    img.save('/app/tunnel_qr.png')
 except Exception as e:
     print(f'  (QR: {e})')
 " 2>/dev/null || true
-
-    # Copy QR code PNG as backup
-    docker compose cp backend:/app/tunnel_qr.png ./tunnel_qr.png 2>/dev/null || true
-
-    if [ -f "./tunnel_qr.png" ]; then
-        echo -e "  ${YELLOW}(PNG backup: ./tunnel_qr.png)${NC}"
-    fi
 
     echo ""
     echo "============================================================"
