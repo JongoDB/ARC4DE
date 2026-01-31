@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.auth import router as auth_router
 from app.api.plugins import router as plugins_router, set_plugin_manager
 from app.api.sessions import router as sessions_router
+from app.api.tunnel import router as tunnel_router, set_tunnel_manager
 from app.config import settings
 from app.core.tmux import TmuxManager
 from app.plugins.manager import PluginManager
@@ -66,6 +67,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(sessions_router)
 app.include_router(plugins_router)
+app.include_router(tunnel_router)
 
 # WebSocket
 app.add_websocket_route("/ws/terminal", terminal_handler)
