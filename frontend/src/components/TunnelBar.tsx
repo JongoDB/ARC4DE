@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { Link2, Copy, Check, QrCode, ExternalLink, X } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { useTunnelStore } from "@/stores/tunnelStore";
 import { useServerStore } from "@/stores/serverStore";
 
@@ -331,7 +332,7 @@ export function TunnelBar() {
               </button>
             </div>
 
-            {/* QR Code placeholder - in the future, integrate a QR library */}
+            {/* QR Code */}
             <div
               style={{
                 display: "flex",
@@ -342,26 +343,20 @@ export function TunnelBar() {
             >
               <div
                 style={{
-                  width: "200px",
-                  height: "200px",
-                  backgroundColor: "var(--color-bg-tertiary)",
-                  borderRadius: "8px",
+                  padding: "16px",
+                  backgroundColor: "white",
+                  borderRadius: "12px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  border: "1px solid var(--color-border)",
                 }}
               >
-                <div
-                  style={{
-                    textAlign: "center",
-                    color: "var(--color-text-muted)",
-                  }}
-                >
-                  <QrCode size={48} style={{ marginBottom: "8px" }} />
-                  <p style={{ fontSize: "12px" }}>QR Code</p>
-                  <p style={{ fontSize: "11px" }}>(Coming soon)</p>
-                </div>
+                <QRCodeSVG
+                  value={sessionUrl}
+                  size={180}
+                  level="M"
+                  marginSize={0}
+                />
               </div>
 
               <div
