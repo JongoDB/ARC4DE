@@ -1,14 +1,63 @@
 """Cloudflare tunnel management for remote access."""
 
 import asyncio
+import io
 import logging
 import re
 import shutil
 import subprocess
+import sys
 from subprocess import Popen
 from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
+
+
+def print_tunnel_qr(url: str) -> None:
+    """Print tunnel URL and QR code to terminal for headless access.
+
+    Args:
+        url: The tunnel URL to display
+    """
+    try:
+        import qrcode
+    except ImportError:
+        # qrcode not installed, just print the URL
+        print(f"\n{'='*60}")
+        print("  ARC4DE Remote Access")
+        print(f"{'='*60}")
+        print(f"  Tunnel URL: {url}")
+        print(f"{'='*60}\n")
+        return
+
+    # Create QR code
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=1,
+        border=1,
+    )
+    qr.add_data(url)
+    qr.make(fit=True)
+
+    # Render to terminal using Unicode blocks
+    output = io.StringIO()
+    qr.print_ascii(out=output, invert=True)
+    qr_text = output.getvalue()
+
+    # Print banner with QR code
+    print(f"\n{'='*60}")
+    print("  ARC4DE Remote Access")
+    print(f"{'='*60}")
+    print(f"\n  Scan QR code or visit:\n")
+    print(f"  \033[1;36m{url}\033[0m\n")
+
+    # Indent QR code for better appearance
+    for line in qr_text.strip().split('\n'):
+        print(f"  {line}")
+
+    print(f"\n{'='*60}\n")
+    sys.stdout.flush()
 
 # Pattern to match trycloudflare.com URLs
 TUNNEL_URL_PATTERN = re.compile(r"https://[\w-]+\.trycloudflare\.com")
@@ -108,6 +157,8 @@ class TunnelManager:
             if url:
                 self.session_url = url
                 logger.info(f"Session tunnel started: {url}")
+                # Print QR code to terminal for headless access
+                print_tunnel_qr(url)
             else:
                 logger.error("Failed to parse tunnel URL")
                 await self.stop_session_tunnel()
