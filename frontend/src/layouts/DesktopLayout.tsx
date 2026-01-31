@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { Server, Layers, Terminal } from "lucide-react";
+import { TunnelBar } from "@/components/TunnelBar";
 
 const NAV_ITEMS = [
   { to: "/", icon: Server, label: "Servers" },
@@ -73,11 +74,14 @@ export function DesktopLayout() {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '48px' }}>
-          <Outlet />
-        </div>
-      </main>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <TunnelBar />
+        <main className="flex-1 overflow-y-auto" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+          <div style={{ maxWidth: '900px', margin: '0 auto', padding: '48px' }}>
+            <Outlet />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

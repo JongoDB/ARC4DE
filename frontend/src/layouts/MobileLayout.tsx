@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { Server, Layers, Terminal } from "lucide-react";
+import { TunnelBar } from "@/components/TunnelBar";
 
 const NAV_ITEMS = [
   { to: "/", icon: Server, label: "Servers" },
@@ -19,6 +20,8 @@ export function MobileLayout() {
           v{__APP_VERSION__}
         </span>
       </header>
+
+      <TunnelBar />
 
       {/* Content */}
       <main className="flex-1 overflow-y-auto">
