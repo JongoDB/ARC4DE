@@ -2,6 +2,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from app.core.tunnel import parse_tunnel_url, TunnelManager
+from app.config import settings
 
 
 class TestParseTunnelUrl:
@@ -103,3 +104,14 @@ class TestTunnelManager:
         # Should not raise
         await manager.stop_session_tunnel()
         assert manager.session_process is None
+
+
+class TestTunnelConfig:
+    def test_tunnel_enabled_default(self):
+        # Default should be True
+        assert hasattr(settings, "tunnel_enabled")
+        assert settings.tunnel_enabled is True
+
+    def test_tunnel_port_default(self):
+        assert hasattr(settings, "tunnel_port")
+        assert settings.tunnel_port == 8000

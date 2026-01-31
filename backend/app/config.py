@@ -19,6 +19,10 @@ class Settings(BaseSettings):
     # Sessions
     session_ttl_hours: int = 24
 
+    # Tunnel
+    tunnel_enabled: bool = True
+    tunnel_port: int = 8000
+
     @property
     def cors_origins(self) -> list[str]:
         return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]
