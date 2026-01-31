@@ -1,6 +1,7 @@
 # backend/tests/test_tunnel.py
 import pytest
-from app.core.tunnel import parse_tunnel_url
+from unittest.mock import patch
+from app.core.tunnel import parse_tunnel_url, TunnelManager
 
 
 class TestParseTunnelUrl:
@@ -28,3 +29,22 @@ class TestParseTunnelUrl:
 """
         url = parse_tunnel_url(stderr_output)
         assert url == "https://test-abc-123.trycloudflare.com"
+
+
+class TestTunnelManager:
+    def test_init_state(self):
+        manager = TunnelManager()
+        assert manager.session_url is None
+        assert manager.session_process is None
+        assert manager.preview_tunnels == {}
+        assert manager.preview_urls == {}
+
+    def test_is_available_true_when_cloudflared_exists(self):
+        manager = TunnelManager()
+        with patch("shutil.which", return_value="/usr/local/bin/cloudflared"):
+            assert manager.is_available() is True
+
+    def test_is_available_false_when_cloudflared_missing(self):
+        manager = TunnelManager()
+        with patch("shutil.which", return_value=None):
+            assert manager.is_available() is False
