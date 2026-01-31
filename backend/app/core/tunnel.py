@@ -107,13 +107,25 @@ class TunnelManager:
         return parse_tunnel_url(collected)
 
     async def stop_session_tunnel(self) -> None:
-        """Stop the session tunnel if running."""
-        if self.session_process is not None:
+        """Stop the session tunnel."""
+        if self.session_process is None:
+            return
+
+        try:
             self.session_process.terminate()
+            # Wait for graceful shutdown using async executor
+            loop = asyncio.get_event_loop()
             try:
-                self.session_process.wait(timeout=5.0)
-            except subprocess.TimeoutExpired:
+                await asyncio.wait_for(
+                    loop.run_in_executor(None, self.session_process.wait),
+                    timeout=5.0
+                )
+            except asyncio.TimeoutError:
                 self.session_process.kill()
+                await loop.run_in_executor(None, self.session_process.wait)
+        except Exception as e:
+            logger.error(f"Error stopping session tunnel: {e}")
+        finally:
             self.session_process = None
             self.session_url = None
             logger.info("Session tunnel stopped")

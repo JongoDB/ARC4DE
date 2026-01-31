@@ -78,3 +78,28 @@ class TestTunnelManager:
 
         assert url is None
         assert manager.session_url is None
+
+    @pytest.mark.asyncio
+    async def test_stop_session_tunnel(self):
+        manager = TunnelManager()
+
+        mock_process = MagicMock()
+        mock_process.terminate = MagicMock()
+        mock_process.wait = MagicMock(return_value=0)
+        mock_process.poll = MagicMock(return_value=None)
+
+        manager.session_process = mock_process
+        manager.session_url = "https://test.trycloudflare.com"
+
+        await manager.stop_session_tunnel()
+
+        mock_process.terminate.assert_called_once()
+        assert manager.session_process is None
+        assert manager.session_url is None
+
+    @pytest.mark.asyncio
+    async def test_stop_session_tunnel_when_none(self):
+        manager = TunnelManager()
+        # Should not raise
+        await manager.stop_session_tunnel()
+        assert manager.session_process is None
