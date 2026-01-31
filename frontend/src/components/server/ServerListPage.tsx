@@ -64,7 +64,7 @@ export function ServerListPage() {
   if (!loaded) {
     return (
       <div className="flex h-full items-center justify-center">
-        <span className="text-[var(--color-text-secondary)]">Loading...</span>
+        <span style={{ color: 'var(--color-text-secondary)' }}>Loading...</span>
       </div>
     );
   }
@@ -72,157 +72,382 @@ export function ServerListPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8 flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
-              Servers
-            </h1>
-            <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-              {servers.length} server{servers.length !== 1 ? "s" : ""} configured
-            </p>
-          </div>
-          {!showForm && (
-            <button
-              onClick={() => {
-                resetForm();
-                setShowForm(true);
-              }}
-              className="flex h-11 items-center gap-2 rounded-lg bg-[var(--color-accent)] px-6 text-[15px] font-medium text-white transition-colors hover:bg-[var(--color-accent-hover)]"
-            >
-              <Plus className="h-4 w-4" />
-              Add Server
-            </button>
-          )}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: '32px'
+      }}>
+        <div>
+          <h1 style={{
+            fontSize: '24px',
+            fontWeight: 700,
+            color: 'var(--color-text-primary)',
+            marginBottom: '4px'
+          }}>
+            Servers
+          </h1>
+          <p style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
+            {servers.length} server{servers.length !== 1 ? "s" : ""} configured
+          </p>
         </div>
+        {!showForm && (
+          <button
+            onClick={() => {
+              resetForm();
+              setShowForm(true);
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              height: '44px',
+              padding: '0 20px',
+              borderRadius: '8px',
+              backgroundColor: 'var(--color-accent)',
+              color: 'white',
+              fontSize: '15px',
+              fontWeight: 500,
+              border: 'none',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-accent)'}
+          >
+            <Plus size={18} />
+            Add Server
+          </button>
+        )}
+      </div>
 
-        {/* Add/Edit Form */}
-        {showForm && (
-          <div className="mb-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] p-6">
-            <h2 className="mb-4 text-base font-semibold text-[var(--color-text-primary)]">
-              {editingId ? "Edit Server" : "Add New Server"}
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[var(--color-text-secondary)]">
-                  Server Name
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Home Lab"
-                  className="h-12 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-4 text-base text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent-muted)]"
-                  autoFocus
-                />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[var(--color-text-secondary)]">
-                  Server URL
-                </label>
-                <input
-                  type="text"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="e.g. https://myserver.example.com"
-                  className="h-12 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-4 text-base text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent-muted)]"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleSubmit();
-                  }}
-                />
-              </div>
-              <div className="flex gap-3 pt-2">
-                <button
-                  onClick={handleSubmit}
-                  className="flex h-11 items-center gap-2 rounded-lg bg-[var(--color-accent)] px-6 text-[15px] font-medium text-white transition-colors hover:bg-[var(--color-accent-hover)]"
-                >
-                  {editingId ? "Save Changes" : "Add Server"}
-                </button>
-                <button
-                  onClick={resetForm}
-                  className="flex h-11 items-center rounded-lg border border-[var(--color-border)] px-6 text-[15px] font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]"
-                >
-                  Cancel
-                </button>
-              </div>
+      {/* Add/Edit Form */}
+      {showForm && (
+        <div style={{
+          marginBottom: '24px',
+          padding: '24px',
+          borderRadius: '12px',
+          backgroundColor: 'var(--color-bg-tertiary)',
+          border: '1px solid var(--color-border)',
+        }}>
+          <h2 style={{
+            fontSize: '18px',
+            fontWeight: 600,
+            color: 'var(--color-text-primary)',
+            marginBottom: '20px'
+          }}>
+            {editingId ? "Edit Server" : "Add New Server"}
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: '12px',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.02em',
+                color: 'var(--color-text-muted)',
+                marginBottom: '8px',
+              }}>
+                Server Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Home Lab"
+                autoFocus
+                style={{
+                  width: '100%',
+                  height: '48px',
+                  padding: '0 16px',
+                  borderRadius: '8px',
+                  backgroundColor: 'var(--color-bg-primary)',
+                  border: '1px solid transparent',
+                  color: 'var(--color-text-primary)',
+                  fontSize: '15px',
+                  outline: 'none',
+                }}
+                onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-accent)'}
+                onBlur={(e) => e.currentTarget.style.borderColor = 'transparent'}
+              />
+            </div>
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: '12px',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.02em',
+                color: 'var(--color-text-muted)',
+                marginBottom: '8px',
+              }}>
+                Server URL
+              </label>
+              <input
+                type="text"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="e.g. https://myserver.example.com"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSubmit();
+                }}
+                style={{
+                  width: '100%',
+                  height: '48px',
+                  padding: '0 16px',
+                  borderRadius: '8px',
+                  backgroundColor: 'var(--color-bg-primary)',
+                  border: '1px solid transparent',
+                  color: 'var(--color-text-primary)',
+                  fontSize: '15px',
+                  outline: 'none',
+                }}
+                onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-accent)'}
+                onBlur={(e) => e.currentTarget.style.borderColor = 'transparent'}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '12px', paddingTop: '4px' }}>
+              <button
+                onClick={handleSubmit}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  height: '44px',
+                  padding: '0 20px',
+                  borderRadius: '8px',
+                  backgroundColor: 'var(--color-accent)',
+                  color: 'white',
+                  fontSize: '15px',
+                  fontWeight: 500,
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-accent)'}
+              >
+                {editingId ? "Save Changes" : "Add Server"}
+              </button>
+              <button
+                onClick={resetForm}
+                style={{
+                  height: '44px',
+                  padding: '0 20px',
+                  borderRadius: '8px',
+                  backgroundColor: 'transparent',
+                  color: 'var(--color-text-secondary)',
+                  fontSize: '15px',
+                  fontWeight: 500,
+                  border: '1px solid var(--color-border-strong)',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-bg-elevated)';
+                  e.currentTarget.style.color = 'var(--color-text-primary)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = 'var(--color-text-secondary)';
+                }}
+              >
+                Cancel
+              </button>
             </div>
           </div>
-        )}
-
-        {/* Empty state */}
-        {servers.length === 0 && !showForm && (
-          <div className="flex flex-1 flex-col items-center justify-center py-16">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-bg-tertiary)]">
-              <Server className="h-8 w-8 text-[var(--color-text-secondary)]" />
-            </div>
-            <p className="mb-1 text-lg font-medium text-[var(--color-text-primary)]">
-              No servers yet
-            </p>
-            <p className="mb-4 text-sm text-[var(--color-text-secondary)]">
-              Add your first server to get started
-            </p>
-            <button
-              onClick={() => setShowForm(true)}
-              className="flex h-11 items-center gap-2 rounded-lg bg-[var(--color-accent)] px-6 text-[15px] font-medium text-white transition-colors hover:bg-[var(--color-accent-hover)]"
-            >
-              <Plus className="h-4 w-4" />
-              Add Server
-            </button>
-          </div>
-        )}
-
-        {/* Server list */}
-        <div className="space-y-4">
-          {servers.map((server) => (
-            <div
-              key={server.id}
-              onClick={() => handleCardClick(server)}
-              className="group flex cursor-pointer items-center justify-between rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] p-6 transition-colors hover:border-[var(--color-border-hover)] hover:bg-[var(--color-bg-elevated)]"
-            >
-              <div className="flex min-w-0 flex-1 items-center gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--color-bg-elevated)]">
-                  <Server className="h-5 w-5 text-[var(--color-accent)]" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg font-semibold text-[var(--color-text-primary)]">
-                      {server.name}
-                    </span>
-                    <ExternalLink className="h-3.5 w-3.5 text-[var(--color-text-secondary)] opacity-0 transition-opacity group-hover:opacity-100" />
-                  </div>
-                  <div className="truncate text-sm text-[var(--color-text-secondary)]">
-                    {server.url}
-                  </div>
-                </div>
-              </div>
-              <div className="ml-3 flex shrink-0 gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    startEdit(server);
-                  }}
-                  className="flex h-10 w-10 items-center justify-center rounded-lg text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]"
-                  title="Edit server"
-                >
-                  <Pencil className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(server.id);
-                  }}
-                  className={`flex h-10 w-10 items-center justify-center rounded-lg transition-colors ${
-                    confirmDeleteId === server.id
-                      ? "bg-[var(--color-error)] text-white"
-                      : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-error)]"
-                  }`}
-                  title={confirmDeleteId === server.id ? "Click to confirm" : "Delete server"}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          ))}
         </div>
+      )}
+
+      {/* Empty state */}
+      {servers.length === 0 && !showForm && (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '64px 0',
+        }}>
+          <div style={{
+            width: '64px',
+            height: '64px',
+            borderRadius: '50%',
+            backgroundColor: 'var(--color-bg-tertiary)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '16px',
+          }}>
+            <Server size={28} style={{ color: 'var(--color-text-muted)' }} />
+          </div>
+          <p style={{
+            fontSize: '18px',
+            fontWeight: 600,
+            color: 'var(--color-text-primary)',
+            marginBottom: '4px'
+          }}>
+            No servers yet
+          </p>
+          <p style={{
+            fontSize: '14px',
+            color: 'var(--color-text-muted)',
+            marginBottom: '20px'
+          }}>
+            Add your first server to get started
+          </p>
+          <button
+            onClick={() => setShowForm(true)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              height: '44px',
+              padding: '0 20px',
+              borderRadius: '8px',
+              backgroundColor: 'var(--color-accent)',
+              color: 'white',
+              fontSize: '15px',
+              fontWeight: 500,
+              border: 'none',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-accent)'}
+          >
+            <Plus size={18} />
+            Add Server
+          </button>
+        </div>
+      )}
+
+      {/* Server list */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        {servers.map((server) => (
+          <div
+            key={server.id}
+            onClick={() => handleCardClick(server)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '20px',
+              borderRadius: '12px',
+              backgroundColor: 'var(--color-bg-tertiary)',
+              border: '1px solid var(--color-border)',
+              cursor: 'pointer',
+              transition: 'background-color 0.15s ease',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-bg-elevated)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-bg-tertiary)'}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', minWidth: 0, flex: 1 }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '10px',
+                backgroundColor: 'var(--color-bg-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}>
+                <Server size={22} style={{ color: 'var(--color-accent)' }} />
+              </div>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    color: 'var(--color-text-primary)'
+                  }}>
+                    {server.name}
+                  </span>
+                  <ExternalLink
+                    size={14}
+                    style={{
+                      color: 'var(--color-text-muted)',
+                      opacity: 0,
+                      transition: 'opacity 0.15s ease',
+                    }}
+                    className="group-hover-icon"
+                  />
+                </div>
+                <div style={{
+                  fontSize: '14px',
+                  color: 'var(--color-text-muted)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}>
+                  {server.url}
+                </div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', marginLeft: '16px', flexShrink: 0 }}>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  startEdit(server);
+                }}
+                title="Edit server"
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '6px',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--color-text-muted)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
+                  e.currentTarget.style.color = 'var(--color-text-primary)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = 'var(--color-text-muted)';
+                }}
+              >
+                <Pencil size={16} />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(server.id);
+                }}
+                title={confirmDeleteId === server.id ? "Click to confirm" : "Delete server"}
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '6px',
+                  backgroundColor: confirmDeleteId === server.id ? 'var(--color-error)' : 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: confirmDeleteId === server.id ? 'white' : 'var(--color-text-muted)',
+                }}
+                onMouseEnter={(e) => {
+                  if (confirmDeleteId !== server.id) {
+                    e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
+                    e.currentTarget.style.color = 'var(--color-error)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (confirmDeleteId !== server.id) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = 'var(--color-text-muted)';
+                  }
+                }}
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

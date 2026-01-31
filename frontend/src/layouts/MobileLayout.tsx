@@ -22,7 +22,9 @@ export function MobileLayout() {
 
       {/* Content */}
       <main className="flex-1 overflow-y-auto">
-        <Outlet />
+        <div style={{ padding: '24px 20px' }}>
+          <Outlet />
+        </div>
       </main>
 
       {/* Bottom navigation - 72px + safe area */}

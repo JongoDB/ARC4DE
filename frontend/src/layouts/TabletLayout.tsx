@@ -46,7 +46,9 @@ export function TabletLayout() {
 
       {/* Main content */}
       <main className="flex-1 overflow-y-auto">
-        <Outlet />
+        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '32px' }}>
+          <Outlet />
+        </div>
       </main>
     </div>
   );

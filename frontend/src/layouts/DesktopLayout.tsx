@@ -9,31 +9,53 @@ const NAV_ITEMS = [
 
 export function DesktopLayout() {
   return (
-    <div className="flex h-screen bg-[var(--color-bg-primary)]">
-      {/* Sidebar - 240px */}
-      <aside className="flex w-60 flex-col border-r border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+    <div className="flex h-screen" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+      {/* Sidebar - 280px */}
+      <aside
+        className="flex w-[280px] flex-col"
+        style={{ backgroundColor: 'var(--color-bg-secondary)' }}
+      >
         {/* Logo */}
-        <div className="flex h-16 items-center px-5">
-          <span className="text-xl font-bold text-[var(--color-text-primary)]">
-            ARC<span className="text-[var(--color-accent)]">4</span>DE
+        <div className="flex h-16 items-center" style={{ padding: '0 20px' }}>
+          <span className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
+            ARC<span style={{ color: 'var(--color-accent)' }}>4</span>DE
           </span>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-2">
-          <div className="space-y-1">
+        <nav className="flex-1" style={{ padding: '8px 12px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
               <NavLink
                 key={to}
                 to={to}
                 end={to === "/"}
                 className={({ isActive }) =>
-                  `flex h-12 items-center gap-3 rounded-lg px-3 text-[15px] font-medium transition-colors ${
-                    isActive
-                      ? "border-l-[3px] border-[var(--color-accent)] bg-[var(--color-bg-tertiary)] text-[var(--color-text-primary)]"
-                      : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]"
+                  `flex items-center rounded-lg transition-colors ${
+                    isActive ? "font-medium" : ""
                   }`
                 }
+                style={({ isActive }) => ({
+                  height: '48px',
+                  padding: '0 12px',
+                  gap: '12px',
+                  borderRadius: '8px',
+                  fontSize: '15px',
+                  backgroundColor: isActive ? 'var(--color-bg-elevated)' : 'transparent',
+                  color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
+                  borderLeft: isActive ? '3px solid var(--color-accent)' : '3px solid transparent',
+                })}
+                onMouseEnter={(e) => {
+                  if (!e.currentTarget.classList.contains('active')) {
+                    e.currentTarget.style.backgroundColor = 'var(--color-bg-tertiary)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  const isActive = e.currentTarget.getAttribute('aria-current') === 'page';
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
+                }}
               >
                 <Icon size={20} />
                 {label}
@@ -43,16 +65,16 @@ export function DesktopLayout() {
         </nav>
 
         {/* Version */}
-        <div className="px-5 py-4">
-          <span className="text-xs text-[var(--color-text-muted)]">
+        <div style={{ padding: '16px 20px' }}>
+          <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
             v{__APP_VERSION__}
           </span>
         </div>
       </aside>
 
-      {/* Main content with max-width container */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-3xl px-10 py-10">
+      {/* Main content */}
+      <main className="flex-1 overflow-y-auto" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '48px' }}>
           <Outlet />
         </div>
       </main>

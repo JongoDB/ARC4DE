@@ -1,30 +1,49 @@
 @import "tailwindcss";
 
 :root {
-  /* Backgrounds - more contrast between layers */
-  --color-bg-primary: #0a0e17;
-  --color-bg-secondary: #1a1d24;
-  --color-bg-tertiary: #2b2d31;
-  --color-bg-elevated: #32353b;
+  /* Backgrounds - Discord-inspired layering */
+  --color-bg-primary: #1e1f22;
+  --color-bg-secondary: #2b2d31;
+  --color-bg-tertiary: #313338;
+  --color-bg-elevated: #393c41;
+  --color-bg-hover: #43444b;
 
-  /* Borders - actually visible */
-  --color-border: #3f4147;
-  --color-border-hover: #4f545c;
+  /* Borders */
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-strong: rgba(255, 255, 255, 0.1);
+  --color-border-hover: rgba(255, 255, 255, 0.16);
 
-  /* Text - better contrast */
+  /* Text */
   --color-text-primary: #f2f3f5;
   --color-text-secondary: #b5bac1;
-  --color-text-muted: #80848e;
+  --color-text-muted: #949ba4;
 
   /* Accent - Discord blurple */
   --color-accent: #5865f2;
   --color-accent-hover: #4752c4;
-  --color-accent-muted: rgba(88, 101, 242, 0.2);
+  --color-accent-muted: rgba(88, 101, 242, 0.15);
 
   /* Status */
   --color-success: #23a559;
   --color-warning: #f0b232;
   --color-error: #da373c;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
 }
 
 * {
@@ -48,6 +67,10 @@ body,
     "Segoe UI",
     Roboto,
     sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .scroll-container {
@@ -64,4 +87,18 @@ body,
     Monaco,
     "Courier New",
     monospace;
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Smooth transitions globally */
+button,
+a,
+input,
+textarea {
+  transition: all 0.15s ease;
 }
