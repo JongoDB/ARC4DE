@@ -6,9 +6,14 @@ import { useServerStore } from "@/stores/serverStore";
 
 const POLL_INTERVAL_MS = 30000; // 30 seconds
 
-// Check if we're accessing via a Cloudflare tunnel
-function isAccessingViaTunnel(): boolean {
-  return window.location.hostname.endsWith(".trycloudflare.com");
+// Check if we're accessing locally or via tunnel (can fetch tunnel info directly)
+function canFetchFromOrigin(): boolean {
+  const hostname = window.location.hostname;
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname.endsWith(".trycloudflare.com")
+  );
 }
 
 export function TunnelBar() {
@@ -18,8 +23,8 @@ export function TunnelBar() {
   const [copied, setCopied] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
 
-  // Determine if we're accessing via tunnel
-  const viaTunnel = useMemo(() => isAccessingViaTunnel(), []);
+  // Check if we can fetch tunnel info directly from current origin
+  const fetchFromOrigin = useMemo(() => canFetchFromOrigin(), []);
 
   // Get the server URL for the active connection
   const serverUrl = activeConnection
@@ -27,14 +32,14 @@ export function TunnelBar() {
     : null;
 
   const fetchInfo = useCallback(() => {
-    // If accessing via tunnel, fetch from current origin (no auth needed)
-    if (viaTunnel) {
+    // If on localhost or tunnel, fetch from current origin (no auth needed)
+    if (fetchFromOrigin) {
       fetchTunnelInfoFromOrigin();
     } else if (serverUrl && activeConnection?.accessToken) {
       fetchTunnelInfo(serverUrl, activeConnection.accessToken);
     }
   }, [
-    viaTunnel,
+    fetchFromOrigin,
     serverUrl,
     activeConnection?.accessToken,
     fetchTunnelInfo,
