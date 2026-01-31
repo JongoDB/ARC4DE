@@ -105,6 +105,60 @@ class TestTunnelManager:
         await manager.stop_session_tunnel()
         assert manager.session_process is None
 
+    @pytest.mark.asyncio
+    async def test_start_preview_tunnel(self):
+        manager = TunnelManager()
+
+        mock_process = MagicMock()
+        mock_process.stderr.readline = MagicMock(side_effect=[
+            b"INF https://preview-3000.trycloudflare.com\n",
+        ])
+        mock_process.poll = MagicMock(return_value=None)
+
+        with patch("shutil.which", return_value="/usr/local/bin/cloudflared"):
+            with patch("subprocess.Popen", return_value=mock_process):
+                url = await manager.start_preview_tunnel(port=3000)
+
+        assert url == "https://preview-3000.trycloudflare.com"
+        assert manager.preview_urls[3000] == "https://preview-3000.trycloudflare.com"
+        assert 3000 in manager.preview_tunnels
+
+    @pytest.mark.asyncio
+    async def test_stop_preview_tunnel(self):
+        manager = TunnelManager()
+
+        mock_process = MagicMock()
+        mock_process.terminate = MagicMock()
+        mock_process.wait = MagicMock(return_value=0)
+
+        manager.preview_tunnels[3000] = mock_process
+        manager.preview_urls[3000] = "https://preview.trycloudflare.com"
+
+        await manager.stop_preview_tunnel(3000)
+
+        assert 3000 not in manager.preview_tunnels
+        assert 3000 not in manager.preview_urls
+
+    @pytest.mark.asyncio
+    async def test_stop_all_preview_tunnels(self):
+        manager = TunnelManager()
+
+        mock_proc1 = MagicMock()
+        mock_proc1.terminate = MagicMock()
+        mock_proc1.wait = MagicMock(return_value=0)
+
+        mock_proc2 = MagicMock()
+        mock_proc2.terminate = MagicMock()
+        mock_proc2.wait = MagicMock(return_value=0)
+
+        manager.preview_tunnels = {3000: mock_proc1, 5173: mock_proc2}
+        manager.preview_urls = {3000: "url1", 5173: "url2"}
+
+        await manager.stop_all_preview_tunnels()
+
+        assert manager.preview_tunnels == {}
+        assert manager.preview_urls == {}
+
 
 class TestTunnelConfig:
     def test_tunnel_enabled_default(self):

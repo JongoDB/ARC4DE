@@ -164,3 +164,63 @@ class TunnelManager:
             self.session_process = None
             self.session_url = None
             logger.info("Session tunnel stopped")
+
+    async def start_preview_tunnel(self, port: int) -> Optional[str]:
+        """Start a tunnel for a dev server preview.
+
+        Args:
+            port: Local port to tunnel
+
+        Returns:
+            The public tunnel URL, or None if unavailable/failed
+        """
+        if not self.is_available():
+            return None
+
+        if port in self.preview_tunnels:
+            return self.preview_urls.get(port)
+
+        try:
+            process = subprocess.Popen(
+                ["cloudflared", "tunnel", "--url", f"http://localhost:{port}"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+
+            url = await self._read_tunnel_url(process)
+            if url:
+                self.preview_tunnels[port] = process
+                self.preview_urls[port] = url
+                logger.info(f"Preview tunnel started for port {port}: {url}")
+                return url
+            else:
+                process.terminate()
+                process.wait()
+                return None
+
+        except Exception as e:
+            logger.error(f"Failed to start preview tunnel for port {port}: {e}")
+            return None
+
+    async def stop_preview_tunnel(self, port: int) -> None:
+        """Stop a specific preview tunnel.
+
+        Args:
+            port: The port of the preview tunnel to stop
+        """
+        process = self.preview_tunnels.pop(port, None)
+        self.preview_urls.pop(port, None)
+
+        if process:
+            try:
+                process.terminate()
+                loop = asyncio.get_event_loop()
+                await loop.run_in_executor(None, process.wait)
+            except Exception as e:
+                logger.error(f"Error stopping preview tunnel for port {port}: {e}")
+
+    async def stop_all_preview_tunnels(self) -> None:
+        """Stop all preview tunnels."""
+        ports = list(self.preview_tunnels.keys())
+        for port in ports:
+            await self.stop_preview_tunnel(port)
