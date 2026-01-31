@@ -1,7 +1,7 @@
 # backend/tests/test_tunnel.py
 import pytest
 from unittest.mock import patch, MagicMock
-from app.core.tunnel import parse_tunnel_url, TunnelManager
+from app.core.tunnel import parse_tunnel_url, TunnelManager, detect_server_port
 from app.config import settings
 
 
@@ -115,3 +115,30 @@ class TestTunnelConfig:
     def test_tunnel_port_default(self):
         assert hasattr(settings, "tunnel_port")
         assert settings.tunnel_port == 8000
+
+
+class TestDetectServerPort:
+    def test_detect_vite_port(self):
+        output = "  VITE v5.0.0  ready in 500 ms\n\n  ➜  Local:   http://localhost:5173/"
+        assert detect_server_port(output) == 5173
+
+    def test_detect_next_port(self):
+        output = "ready - started server on 0.0.0.0:3000, url: http://localhost:3000"
+        assert detect_server_port(output) == 3000
+
+    def test_detect_express_port(self):
+        output = "Server listening on port 8080"
+        assert detect_server_port(output) == 8080
+
+    def test_detect_python_port(self):
+        output = "Uvicorn running on http://127.0.0.1:8080"
+        assert detect_server_port(output) == 8080
+
+    def test_no_detection(self):
+        output = "Just some random output"
+        assert detect_server_port(output) is None
+
+    def test_ignores_common_false_positives(self):
+        # Port 8000 is ARC4DE itself, should be ignored
+        output = "listening on port 8000"
+        assert detect_server_port(output, ignore_ports={8000}) is None

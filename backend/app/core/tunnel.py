@@ -13,6 +13,41 @@ logger = logging.getLogger(__name__)
 # Pattern to match trycloudflare.com URLs
 TUNNEL_URL_PATTERN = re.compile(r"https://[\w-]+\.trycloudflare\.com")
 
+# Patterns to detect dev server ports from terminal output
+PREVIEW_PATTERNS = [
+    re.compile(r"listening on (?:port )?(\d+)", re.IGNORECASE),
+    re.compile(r"Local:\s+https?://(?:localhost|127\.0\.0\.1):(\d+)"),
+    re.compile(r"ready on https?://(?:localhost|127\.0\.0\.1):(\d+)"),
+    re.compile(r"started server on.*:(\d+)"),
+    re.compile(r"Server (?:running|listening) (?:on|at) https?://(?:localhost|127\.0\.0\.1):(\d+)", re.IGNORECASE),
+    re.compile(r"running on https?://(?:localhost|127\.0\.0\.1):(\d+)", re.IGNORECASE),
+]
+
+DEFAULT_IGNORE_PORTS = {8000}  # ARC4DE backend
+
+
+def detect_server_port(output: str, ignore_ports: set[int] | None = None) -> int | None:
+    """Detect a dev server port from terminal output.
+
+    Args:
+        output: Terminal output text to scan for server port patterns.
+        ignore_ports: Set of ports to ignore (e.g., ARC4DE's own port).
+                     Defaults to {8000}.
+
+    Returns:
+        The detected port number, or None if no port was found.
+    """
+    if ignore_ports is None:
+        ignore_ports = DEFAULT_IGNORE_PORTS
+
+    for pattern in PREVIEW_PATTERNS:
+        match = pattern.search(output)
+        if match:
+            port = int(match.group(1))
+            if port not in ignore_ports:
+                return port
+    return None
+
 
 def parse_tunnel_url(output: str) -> str | None:
     """Extract trycloudflare.com URL from cloudflared output.
