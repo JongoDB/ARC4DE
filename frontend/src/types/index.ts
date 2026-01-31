@@ -27,12 +27,14 @@ export interface WsClientMessage {
   rows?: number;
 }
 
-export interface WsServerMessage {
-  type: "auth.ok" | "auth.fail" | "output" | "pong" | "error";
-  reason?: string;
-  data?: string;
-  message?: string;
-}
+export type WsServerMessage =
+  | { type: "auth.ok" }
+  | { type: "auth.fail"; reason?: string }
+  | { type: "output"; data?: string }
+  | { type: "pong" }
+  | { type: "error"; message?: string }
+  | { type: "tunnel.preview"; port: number; url: string }
+  | { type: "tunnel.preview.closed"; port: number };
 
 export interface ServerConfig {
   id: string;

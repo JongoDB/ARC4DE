@@ -4,6 +4,7 @@ import { useTerminal } from "@/hooks/useTerminal";
 import { WebSocketService } from "@/services/websocket";
 import { useDeviceClass } from "@/hooks/useDeviceClass";
 import { useServerStore } from "@/stores/serverStore";
+import { useTunnelStore } from "@/stores/tunnelStore";
 import { QuickActionBar } from "./QuickActionBar";
 import type { WsConnectionState, QuickAction } from "@/types";
 import { ArrowLeft, Wifi, WifiOff, Loader2 } from "lucide-react";
@@ -33,6 +34,7 @@ export function TerminalPage() {
 
   const navigate = useNavigate();
   const { activeConnection, servers } = useServerStore();
+  const { addPreview, removePreview } = useTunnelStore();
   const activeServer = servers.find(
     (s) => s.id === activeConnection?.serverId,
   );
@@ -62,6 +64,8 @@ export function TerminalPage() {
       onOutput: (data) => terminal.write(data),
       onStateChange: setConnState,
       onError: (msg) => terminal.writeln(`\r\n\x1b[31m[Error] ${msg}\x1b[0m`),
+      onTunnelPreview: addPreview,
+      onTunnelPreviewClosed: removePreview,
     });
 
     // Terminal input from user
@@ -85,7 +89,7 @@ export function TerminalPage() {
       disposables.forEach((d) => d.dispose());
       ws.disconnect();
     };
-  }, [terminal, ws, activeConnection, activeServer, navigate]);
+  }, [terminal, ws, activeConnection, activeServer, navigate, addPreview, removePreview]);
 
   // Refit terminal when layout changes
   useEffect(() => {

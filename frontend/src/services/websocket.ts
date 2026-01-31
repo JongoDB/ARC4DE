@@ -4,6 +4,8 @@ export type WsEventHandler = {
   onOutput?: (data: string) => void;
   onStateChange?: (state: WsConnectionState) => void;
   onError?: (message: string) => void;
+  onTunnelPreview?: (port: number, url: string) => void;
+  onTunnelPreviewClosed?: (port: number) => void;
 };
 
 const PING_INTERVAL_MS = 30_000;
@@ -113,6 +115,18 @@ export class WebSocketService {
 
         case "error":
           this.handlers.onError?.(msg.message ?? "Unknown error");
+          break;
+
+        case "tunnel.preview":
+          if (msg.port && msg.url) {
+            this.handlers.onTunnelPreview?.(msg.port, msg.url);
+          }
+          break;
+
+        case "tunnel.preview.closed":
+          if (msg.port) {
+            this.handlers.onTunnelPreviewClosed?.(msg.port);
+          }
           break;
       }
     };
