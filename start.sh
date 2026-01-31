@@ -68,31 +68,36 @@ else
     echo -e "  ${CYAN}${session_url}${NC}"
     echo ""
 
-    # Generate QR code as PNG image for reliable scanning
+    # Generate terminal QR code - simple black/white approach
     docker compose exec -T backend python3 -c "
 try:
     import qrcode
-    qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=10, border=4)
+    qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=1, border=2)
     qr.add_data('$session_url')
     qr.make(fit=True)
+    matrix = qr.get_matrix()
+
+    # Simple approach: white bg, black blocks
+    # Each row printed with white background
+    print()
+    for row in matrix:
+        line = ''.join(['██' if cell else '  ' for cell in row])
+        # White background (107), black foreground (30)
+        print(f'  \033[107;30m{line}\033[0m')
+    print()
+
+    # Save PNG backup
     img = qr.make_image(fill_color='black', back_color='white')
     img.save('/app/tunnel_qr.png')
-    print('  QR code saved to: tunnel_qr.png')
 except Exception as e:
-    print(f'  (QR image generation failed: {e})')
+    print(f'  (QR: {e})')
 " 2>/dev/null || true
 
-    # Copy QR code from container to host
+    # Copy QR code PNG as backup
     docker compose cp backend:/app/tunnel_qr.png ./tunnel_qr.png 2>/dev/null || true
 
     if [ -f "./tunnel_qr.png" ]; then
-        echo -e "  ${GREEN}QR code saved:${NC} ./tunnel_qr.png"
-        echo ""
-        # Try to open the image (macOS)
-        if command -v open &> /dev/null; then
-            echo -e "  Opening QR code image..."
-            open ./tunnel_qr.png 2>/dev/null || true
-        fi
+        echo -e "  ${YELLOW}(PNG backup: ./tunnel_qr.png)${NC}"
     fi
 
     echo ""
