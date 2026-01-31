@@ -23,6 +23,8 @@ from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from app.core.auth import decode_access_token
 from app.core.tmux import TmuxManager
+from app.core.tunnel import detect_server_port
+from app.api.tunnel import get_tunnel_manager
 
 
 AUTH_TIMEOUT_SECONDS = 30
@@ -129,6 +131,9 @@ async def terminal_handler(websocket: WebSocket) -> None:
 async def _pty_reader(master_fd: int, websocket: WebSocket) -> None:
     """Read from PTY master and send output to WebSocket."""
     loop = asyncio.get_event_loop()
+    tunnel_manager = get_tunnel_manager()
+    recent_output = ""  # Buffer for port detection
+
     try:
         while True:
             try:
@@ -137,14 +142,44 @@ async def _pty_reader(master_fd: int, websocket: WebSocket) -> None:
                 )
                 if not data:
                     break
+
+                text = data.decode("utf-8", errors="replace")
+
+                # Scan for dev server ports
+                if tunnel_manager:
+                    recent_output += text
+                    # Keep only last 1KB for scanning
+                    recent_output = recent_output[-1024:]
+
+                    port = detect_server_port(recent_output)
+                    if port and port not in tunnel_manager.preview_urls:
+                        # Start preview tunnel in background
+                        asyncio.create_task(
+                            _start_preview_and_notify(tunnel_manager, port, websocket)
+                        )
+
                 await websocket.send_json({
                     "type": "output",
-                    "data": data.decode("utf-8", errors="replace"),
+                    "data": text,
                 })
             except OSError:
                 break
     except asyncio.CancelledError:
         pass
+    except Exception:
+        pass
+
+
+async def _start_preview_and_notify(tunnel_manager, port: int, websocket: WebSocket) -> None:
+    """Start a preview tunnel and notify the client."""
+    try:
+        url = await tunnel_manager.start_preview_tunnel(port)
+        if url:
+            await _send(websocket, {
+                "type": "tunnel.preview",
+                "port": port,
+                "url": url,
+            })
     except Exception:
         pass
 
