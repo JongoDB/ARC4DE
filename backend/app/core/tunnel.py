@@ -75,11 +75,14 @@ class TunnelManager:
         """Check if cloudflared binary is available."""
         return shutil.which("cloudflared") is not None
 
-    async def start_session_tunnel(self, port: int = 8000) -> Optional[str]:
+    async def start_session_tunnel(
+        self, port: int = 8000, host: str = "localhost"
+    ) -> Optional[str]:
         """Start the main ARC4DE session tunnel.
 
         Args:
-            port: Local port to tunnel (default 8000)
+            port: Port to tunnel (default 8000)
+            host: Host to tunnel to (default localhost, use "frontend" in Docker)
 
         Returns:
             The public tunnel URL, or None if unavailable/failed
@@ -94,9 +97,10 @@ class TunnelManager:
 
         try:
             self.session_process = subprocess.Popen(
-                ["cloudflared", "tunnel", "--url", f"http://localhost:{port}"],
-                stdout=subprocess.PIPE,
+                ["cloudflared", "tunnel", "--url", f"http://{host}:{port}"],
+                stdout=subprocess.DEVNULL,
                 stderr=subprocess.PIPE,
+                bufsize=0,  # Unbuffered for faster reads
             )
 
             # Read stderr lines until we find URL (with timeout)
@@ -115,31 +119,39 @@ class TunnelManager:
             return None
 
     async def _read_tunnel_url(
-        self, process: Popen, timeout: float = 15.0
+        self, process: Popen, timeout: float = 30.0
     ) -> Optional[str]:
         """Read tunnel URL from cloudflared stderr with timeout."""
         loop = asyncio.get_event_loop()
-        collected = ""
-        deadline = loop.time() + timeout
 
-        while loop.time() < deadline:
-            if process.poll() is not None:
-                break
+        def _blocking_read() -> Optional[str]:
+            """Blocking read that runs in executor."""
+            import select
+            import time
 
-            try:
-                line = await asyncio.wait_for(
-                    loop.run_in_executor(None, process.stderr.readline),
-                    timeout=1.0,
-                )
-                if line:
-                    collected += line.decode("utf-8", errors="replace")
-                    url = parse_tunnel_url(collected)
-                    if url:
-                        return url
-            except asyncio.TimeoutError:
-                continue
+            collected = ""
+            start = time.time()
+            stderr_fd = process.stderr.fileno()
 
-        return parse_tunnel_url(collected)
+            while time.time() - start < timeout:
+                if process.poll() is not None:
+                    break
+
+                ready, _, _ = select.select([stderr_fd], [], [], 0.5)
+                if ready:
+                    try:
+                        chunk = process.stderr.read(4096)
+                        if chunk:
+                            collected += chunk.decode("utf-8", errors="replace")
+                            url = parse_tunnel_url(collected)
+                            if url:
+                                return url
+                    except Exception:
+                        continue
+
+            return parse_tunnel_url(collected)
+
+        return await loop.run_in_executor(None, _blocking_read)
 
     async def stop_session_tunnel(self) -> None:
         """Stop the session tunnel."""

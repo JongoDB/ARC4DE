@@ -29,6 +29,7 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     port: 5175,
+    allowedHosts: ["frontend", ".trycloudflare.com"],
     proxy: {
       "/api": {
         target: "http://backend:8000",

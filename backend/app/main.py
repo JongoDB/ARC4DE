@@ -35,7 +35,10 @@ async def lifespan(app: FastAPI):
     # Start session tunnel if enabled
     if settings.tunnel_enabled:
         try:
-            await tunnel_mgr.start_session_tunnel(port=settings.tunnel_port)
+            await tunnel_mgr.start_session_tunnel(
+                port=settings.tunnel_port,
+                host=settings.tunnel_host,
+            )
         except Exception as e:
             logger.error(f"Failed to start tunnel during startup: {e}")
             # Continue with app startup even if tunnel fails

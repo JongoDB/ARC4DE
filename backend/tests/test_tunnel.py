@@ -55,16 +55,15 @@ class TestTunnelManager:
         manager = TunnelManager()
 
         mock_process = MagicMock()
-        mock_process.stderr.readline = MagicMock(side_effect=[
-            b"INF Starting tunnel\n",
-            b"INF https://test-session.trycloudflare.com\n",
-            b"INF Tunnel ready\n",
-        ])
         mock_process.poll = MagicMock(return_value=None)
+
+        async def mock_read_url(process, timeout=30.0):
+            return "https://test-session.trycloudflare.com"
 
         with patch("shutil.which", return_value="/usr/local/bin/cloudflared"):
             with patch("subprocess.Popen", return_value=mock_process):
-                url = await manager.start_session_tunnel(port=8000)
+                with patch.object(manager, "_read_tunnel_url", mock_read_url):
+                    url = await manager.start_session_tunnel(port=8000)
 
         assert url == "https://test-session.trycloudflare.com"
         assert manager.session_url == "https://test-session.trycloudflare.com"
@@ -110,14 +109,15 @@ class TestTunnelManager:
         manager = TunnelManager()
 
         mock_process = MagicMock()
-        mock_process.stderr.readline = MagicMock(side_effect=[
-            b"INF https://preview-3000.trycloudflare.com\n",
-        ])
         mock_process.poll = MagicMock(return_value=None)
+
+        async def mock_read_url(process, timeout=30.0):
+            return "https://preview-3000.trycloudflare.com"
 
         with patch("shutil.which", return_value="/usr/local/bin/cloudflared"):
             with patch("subprocess.Popen", return_value=mock_process):
-                url = await manager.start_preview_tunnel(port=3000)
+                with patch.object(manager, "_read_tunnel_url", mock_read_url):
+                    url = await manager.start_preview_tunnel(port=3000)
 
         assert url == "https://preview-3000.trycloudflare.com"
         assert manager.preview_urls[3000] == "https://preview-3000.trycloudflare.com"

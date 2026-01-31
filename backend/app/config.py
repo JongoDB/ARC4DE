@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     # Tunnel
     tunnel_enabled: bool = True
     tunnel_port: int = 8000
+    tunnel_host: str = "localhost"  # Use "frontend" in Docker to tunnel the UI
 
     @property
     def cors_origins(self) -> list[str]:
